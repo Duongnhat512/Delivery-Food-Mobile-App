@@ -1,5 +1,5 @@
-import { Suspense, useCallback, useEffect, useState } from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground, Pressable } from 'react-native';
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
@@ -8,11 +8,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
+const StarterPage = () => {
+  
+}
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
   const [bgImage, setBgImage] = useState(require('./assets/intro.png'));
   const [buttonText, setButtonText] = useState('Tiếp tục');
+  const [index, setIndex] = useState(0);
+  const swiperRef = useRef(null);
 
   const [loaded, error] = Font.useFonts({
     "Inter-Bold": require("./assets/fonts/static/Inter_18pt-Bold.ttf"),
@@ -53,6 +58,7 @@ export default function App() {
       require('./assets/intro-1.png'),
       require('./assets/intro-2.png'),
     ];
+    setIndex(index);
     setBgImage(images[index]);
     changeButtonText(index);
   }
@@ -66,11 +72,11 @@ export default function App() {
     }
   }
 
-  // const changeSlide = () => {
-  //   if (swiperRef.current && swiperRef.current < 2) {
-  //     swiperRef.current.scrollBy(1);
-  //   }
-  // };
+  const changeSlide = () => {
+    if (swiperRef.current) {
+      swiperRef.current.scrollBy(1);
+    }
+  };
 
   return (
     <Suspense fallback={<Text>Loading...</Text>}>
@@ -79,14 +85,26 @@ export default function App() {
         style={styles.container}
         onLayout={onLayoutRootView}
       >
+        {index !== 2 && (
+        <TouchableOpacity
+          style={styles.skipButton}
+          onPress={() => {
+          }}
+        >
+          <Text style={{ color: "#E95322", fontSize: 15 }}>Skip</Text>
+          <Image
+            source={require('./assets/next-icon.png')}
+          />
+        </TouchableOpacity>
+      )}
         <SafeAreaView style={styles.swiper}>
           <SwiperIntro
             onIndexChanged={handleIndexChanged}
-            // ref={swiperRef}
+            ref={swiperRef}
           ></SwiperIntro>
           <TouchableOpacity
             style={styles.button}
-            // onPress={changeSlide}
+            onPress={changeSlide}
           >
             <Text style={styles.buttonText}>{buttonText}</Text>
           </TouchableOpacity>
@@ -102,6 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E95322',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    position: 'relative',
 
   },
   swiper: {
@@ -127,6 +146,15 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginBottom: 70,
     marginTop: 30,
-  }
+  },
+  skipButton: {
+    position: 'absolute',
+    top: 50,
+    right: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 50,
+    justifyContent: 'space-between',
+  },
 });
 
