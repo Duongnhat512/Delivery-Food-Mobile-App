@@ -2,6 +2,7 @@
   "expo": {
     "name": "delivery-food",
     "slug": "delivery-food",
+    "scheme": "delivery-food",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,21 +25,8 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font",
-      {
-        "fonts": [
-          {
-            "asset": "./assets/fonts/Montserrat-Regular.ttf",
-            "fontWeight": "400",
-            "fontStyle": "normal"
-          },
-          {
-            "asset": "./assets/fonts/Montserrat-Bold.ttf",
-            "fontWeight": "700",
-            "fontStyle": "normal"
-          }
-        ]
-      }
+        "expo-router",
+        "expo-font"
     ]
   }
 }

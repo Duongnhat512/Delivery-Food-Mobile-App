@@ -1,38 +1,20 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground, Pressable } from 'react-native';
-import Entypo from '@expo/vector-icons/Entypo';
+import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
-import SwiperIntro from './components/SwiperIntro';
+import SwiperIntro from '../../components/SwiperIntro';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
-SplashScreen.preventAutoHideAsync();
-
-// const StarterPage = () => {
-  
-// }
-
-export default function App() {
+const Intro = () => {
   const [appIsReady, setAppIsReady] = useState(false);
-  const [bgImage, setBgImage] = useState(require('./assets/intro.png'));
+  const [bgImage, setBgImage] = useState(require('../../assets/intro.png'));
   const [buttonText, setButtonText] = useState('Tiếp tục');
   const [index, setIndex] = useState(0);
   const swiperRef = useRef(null);
 
-  const [loaded, error] = Font.useFonts({
-    "Inter-Bold": require("./assets/fonts/static/Inter_18pt-Bold.ttf"),
-    "Inter-Medium": require("./assets/fonts/static/Inter_18pt-Medium.ttf"),
-    "Inter-Regular": require("./assets/fonts/static/Inter_18pt-Regular.ttf"),
-    "Inter-SemiBold": require("./assets/fonts/static/Inter_18pt-SemiBold.ttf"),
-    "Inter-Thin": require("./assets/fonts/static/Inter_18pt-Thin.ttf"),
-    "Inter-Light": require("./assets/fonts/static/Inter_18pt-Light.ttf"),
-  });
-
   useEffect(() => {
     async function prepare() {
       try {
-        await Font.loadAsync(Entypo.font);
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         console.warn(e);
@@ -55,9 +37,9 @@ export default function App() {
 
   const handleIndexChanged = (index) => {
     const images = [
-      require('./assets/intro.png'),
-      require('./assets/intro-1.png'),
-      require('./assets/intro-2.png'),
+      require('../../assets/intro.png'),
+      require('../../assets/intro-1.png'),
+      require('../../assets/intro-2.png'),
     ];
     setIndex(index);
     setBgImage(images[index]);
@@ -67,6 +49,8 @@ export default function App() {
   const changeButtonText = (index) => {
     if (index === 2) {
       setButtonText('Bắt đầu nào!');
+    }else if (index > 2){
+      router.push('/screens/welcome');
     }
     else {
       setButtonText('Tiếp tục');
@@ -79,6 +63,11 @@ export default function App() {
     }
   };
 
+  // const handleSkip = async () => {
+  //   await AsyncStorage.setItem('hasSeenIntro', 'true');
+  //   router.push('/welcome');
+  // };
+
   return (
     <Suspense fallback={<Text>Loading...</Text>}>
       <ImageBackground
@@ -87,17 +76,18 @@ export default function App() {
         onLayout={onLayoutRootView}
       >
         {index !== 2 && (
-        <TouchableOpacity
-          style={styles.skipButton}
-          onPress={() => {
-          }}
-        >
-          <Text style={{ color: "#E95322", fontSize: 15 }}>Skip</Text>
-          <Image
-            source={require('./assets/next-icon.png')}
-          />
-        </TouchableOpacity>
-      )}
+          <TouchableOpacity
+            style={styles.skipButton}
+            onPress={() => {
+              router.push('/screens/welcome');
+            }}
+          >
+            <Text style={{ color: "#E95322", fontSize: 15, fontFamily: "Inter" }}>Skip</Text>
+            <Image
+              source={require('../../assets/next-icon.png')}
+            />
+          </TouchableOpacity>
+        )}
         <SafeAreaView style={styles.swiper}>
           <SwiperIntro
             onIndexChanged={handleIndexChanged}
@@ -115,14 +105,15 @@ export default function App() {
   );
 }
 
+export default Intro;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E95322',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
     position: 'relative',
-
+    flexDirection: 'row',
   },
   swiper: {
     width: '100%',
@@ -137,6 +128,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 17,
+    fontFamily: 'Inter',
   },
   button: {
     width: '40%',
@@ -151,7 +143,7 @@ const styles = StyleSheet.create({
   skipButton: {
     position: 'absolute',
     top: 50,
-    right: 30,
+    right: 25,
     flexDirection: 'row',
     alignItems: 'center',
     width: 50,
