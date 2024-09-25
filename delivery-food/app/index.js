@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Intro from "./screens/intro";
 import Welcome from "./screens/welcome";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Page() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -32,11 +33,20 @@ export default function Page() {
     }
   }, [appIsReady]);
 
+  const handleIntroFinish = async () => {
+    try{
+      await AsyncStorage.setItem("hasSeenIntro", "true")
+      setShowIntro(false)
+    }catch(e){
+      console.warn(e)
+    }
+  }
+
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      {/* {showIntro ? <Intro /> : <Welcome />} */}
-      <Intro/>
-    </View>
+    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+      {showIntro ? <Intro onFinish={handleIntroFinish}/> : <Welcome />}
+      {/* <Intro/> */}
+    </SafeAreaView>
   );
 }
 

@@ -21,16 +21,16 @@ export default function WelcomeScreen() {
         <Text
           style={{
             color: '#fff',
-            fontSize: 14,
+            fontSize: 16,
             margin: 40,
-            fontFamily: 'Inter',
+            fontFamily: 'LeagueSpartan-Regular',
           }}
         >
           Nhanh hơn bạn nghĩ, ngon hơn bạn mong đợi!</Text>
         <TouchableOpacity
           style={[styles.button, { marginBottom: 5, backgroundColor: "#F5CB58" }]}
           onPress={() => {
-            router.push("./login");
+            router.push("./screens/login");
           }}
         >
           <Text style={styles.buttonText}>Đăng Nhập</Text>
@@ -62,6 +62,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#E95322',
     fontSize: 24,
-    fontFamily: 'Inter',
+    fontFamily: 'LeagueSpartan-Regular',
   },
 });

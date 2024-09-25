@@ -82,7 +82,7 @@ const Intro = () => {
               router.push('/screens/welcome');
             }}
           >
-            <Text style={{ color: "#E95322", fontSize: 15, fontFamily: "Inter" }}>Skip</Text>
+            <Text style={{ color: "#E95322", fontSize: 15, fontFamily: "LeagueSpartan-Regular" }}>Skip</Text>
             <Image
               source={require('../../assets/next-icon.png')}
             />
@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 17,
-    fontFamily: 'Inter',
+    fontSize: 18,
+    fontFamily: 'LeagueSpartan-Regular',
   },
   button: {
     width: '40%',
@@ -137,12 +137,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-    marginBottom: 70,
-    marginTop: 30,
+    marginBottom: "20%",
   },
   skipButton: {
     position: 'absolute',
-    top: 50,
+    top: 30,
     right: 25,
     flexDirection: 'row',
     alignItems: 'center',

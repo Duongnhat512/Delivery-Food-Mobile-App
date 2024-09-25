@@ -9,6 +9,8 @@ const RootLayout = () => {
         'LeagueSpartan-Regular': require('../assets/fonts/LeagueSpartan-Regular.ttf'),
         'Inter' : require('../assets/fonts/static/Inter_18pt-Regular.ttf'),
         'Inter-Bold' : require('../assets/fonts/static/Inter_18pt-Bold.ttf'),
+        'LeagueSpartan-SemiBold': require('../assets/fonts/LeagueSpartan-SemiBold.ttf'),
+        'LeagueSpartan-Bold': require('../assets/fonts/LeagueSpartan-Bold.ttf'),
     });
 
     useEffect(() => {
