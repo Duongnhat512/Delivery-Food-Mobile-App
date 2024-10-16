@@ -28,6 +28,7 @@ export default function App() {
     "Inter-Thin": require("./assets/fonts/static/Inter_18pt-Thin.ttf"),
     "Inter-Light": require("./assets/fonts/static/Inter_18pt-Light.ttf"),
   });
+  
 
   useEffect(() => {
     async function prepare() {
