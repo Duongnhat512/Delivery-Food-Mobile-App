@@ -49,6 +49,12 @@ const RootLayout = () => {
                     headerShown: false,
                 }}
             />
+            <Stack.Screen
+                name="screens/registration"
+                options={{
+                    headerShown: false,
+                }}
+            />
         </Stack>
     )
 }

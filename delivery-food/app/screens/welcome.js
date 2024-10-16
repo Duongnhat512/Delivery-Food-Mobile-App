@@ -37,6 +37,9 @@ export default function WelcomeScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: "#F3E9B5" }]}
+          onPress={() => {
+            router.push("./screens/registration");
+          }}
         >
           <Text style={styles.buttonText}>Đăng Ký</Text>
         </TouchableOpacity>

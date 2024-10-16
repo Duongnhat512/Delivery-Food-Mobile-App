@@ -18,7 +18,7 @@ const Login = () => {
       <View style={styles.bodyContent}>
         <Text style={[styles.text, { fontSize: 24 }]}>Xin Chào!</Text>
         {/* Phần điền thông tin đăng nhập */}
-        <View style={{ gap: 10 }}>
+        <View style={{ gap: 20 }}>
           <View style={{ gap: 5 }}>
             <Text style={styles.text}>Email hoặc số điện thoại</Text>
             <TextInput style={styles.inputText} placeholder='example@example.com'></TextInput>
@@ -28,7 +28,7 @@ const Login = () => {
 
             <View style={styles.inputText}>
               <TextInput
-                style={styles.text}
+                style={[styles.text, { flex: 1 }]}
                 placeholder='***********'
                 secureTextEntry={showPass} // Ẩn hiện mật khẩu
                 value={password}
@@ -45,7 +45,7 @@ const Login = () => {
         <View style={{ color: "#E95322", alignItems: "flex-end" }}>
           <Text style={{ color: "#E95322" }}>Quên mật khẩu?</Text>
         </View>
-        <View style={{ alignItems: "center", gap: 25, marginTop:"15%" }}>
+        <View style={{ alignItems: "center", gap: 25, marginTop: "10%" }}>
           <TouchableOpacity
             style={styles.button}
           >
@@ -66,7 +66,7 @@ const Login = () => {
               <Image source={require("../../assets/Mark.png")} />
             </TouchableOpacity>
           </View>
-          <View style={{flexDirection: "row", gap: 5}}>
+          <View style={{ flexDirection: "row", gap: 5 }}>
             <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
               Không có tài khoản?
             </Text>
@@ -97,15 +97,14 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
     padding: 30,
-    gap: 20,
+    gap: 30,
   },
   text: {
     fontFamily: 'LeagueSpartan-SemiBold',
     fontSize: 20,
   },
   inputText: {
-    padding: 5,
-    padding: 10,
+    padding: 15,
     backgroundColor: "#F3E9B5",
     fontFamily: 'LeagueSpartan-SemiBold',
     borderRadius: 10,
@@ -122,13 +121,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 30,
   },
-  icon:{
+  icon: {
     width: 40,
     height: 40,
     backgroundColor: '#FFEFE8',
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 15,
-  },  
+  },
 });
 export default Login;

@@ -43,10 +43,10 @@ export default function Page() {
   }
 
   return (
-    <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
+    <View style={styles.container} onLayout={onLayoutRootView}>
       {showIntro ? <Intro onFinish={handleIntroFinish}/> : <Welcome />}
       {/* <Intro/> */}
-    </SafeAreaView>
+    </View>
   );
 }
 
