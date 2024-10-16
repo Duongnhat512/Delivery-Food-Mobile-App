@@ -7,7 +7,8 @@ const CustomHeader = ({ title }) => {
             <TouchableOpacity style={styles.button} onPress={() => router.back()}>
                 <Image
                     source={require('../assets/next-icon.png')}
-                    style={{ transform: [{ rotate: '180deg' }] }}
+                    style={{ transform: [{ rotate: '180deg' }, { scale: 1.5 }], }}
+                    resizeMode="contain"
                 />
             </TouchableOpacity>
             <Text style={styles.title}>{title}</Text>
@@ -32,8 +33,8 @@ const styles = StyleSheet.create({
         fontFamily: 'LeagueSpartan-Bold',
         height: 40,
     },
-    button:{
-        
+    button: {
+
     },
 });
 

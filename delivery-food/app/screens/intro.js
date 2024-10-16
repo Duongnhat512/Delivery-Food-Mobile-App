@@ -1,7 +1,7 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
-import SwiperIntro from '../../components/SwiperIntro';
+import SwiperIntro from '../../components/swiperintro';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 

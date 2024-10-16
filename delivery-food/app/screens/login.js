@@ -1,7 +1,9 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
-import CustomHeader from '../../components/CustomHeader';
+import CustomHeader from '../../components/customheader';
+import { router } from 'expo-router';
+import IconLogin from '../../components/iconlogin';
 
 
 const Login = () => {
@@ -18,7 +20,7 @@ const Login = () => {
       <View style={styles.bodyContent}>
         <Text style={[styles.text, { fontSize: 24 }]}>Xin Chào!</Text>
         {/* Phần điền thông tin đăng nhập */}
-        <View style={{ gap: 20 }}>
+        <View style={{ gap: 10 }}>
           <View style={{ gap: 5 }}>
             <Text style={styles.text}>Email hoặc số điện thoại</Text>
             <TextInput style={styles.inputText} placeholder='example@example.com'></TextInput>
@@ -45,9 +47,10 @@ const Login = () => {
         <View style={{ color: "#E95322", alignItems: "flex-end" }}>
           <Text style={{ color: "#E95322" }}>Quên mật khẩu?</Text>
         </View>
-        <View style={{ alignItems: "center", gap: 25, marginTop: "10%" }}>
+        <View style={{ alignItems: "center", gap: 10, }}>
           <TouchableOpacity
             style={styles.button}
+            onPress={() => router.push("./home")}
           >
             <Text style={[styles.text, { color: "#fff" }]}>Đăng Nhập</Text>
           </TouchableOpacity>
@@ -55,22 +58,14 @@ const Login = () => {
             hoặc đăng nhập với
           </Text>
           {/* Lựa chọn đăng nhập với tài khoản khác */}
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-            <TouchableOpacity style={styles.icon}>
-              <Image source={require("../../assets/Facebook.png")} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.icon}>
-              <Image source={require("../../assets/Gmail.png")} />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.icon}>
-              <Image source={require("../../assets/Mark.png")} />
-            </TouchableOpacity>
-          </View>
+          <IconLogin/>
           <View style={{ flexDirection: "row", gap: 5 }}>
             <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
               Không có tài khoản?
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push("./registration")}
+            >
               <Text style={{ color: "#E95322" }}>Đăng ký</Text>
             </TouchableOpacity>
           </View>
@@ -97,7 +92,7 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
     padding: 30,
-    gap: 30,
+    gap: 15,
   },
   text: {
     fontFamily: 'LeagueSpartan-SemiBold',
@@ -120,14 +115,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-  },
-  icon: {
-    width: 40,
-    height: 40,
-    backgroundColor: '#FFEFE8',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 15,
-  },
+  }
 });
 export default Login;
