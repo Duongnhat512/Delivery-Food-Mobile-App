@@ -14,7 +14,7 @@ const SwiperIntro = React.forwardRef(({ onIndexChanged }, ref) => {
             ref={ref}
             loop={false}
             style={styles.wrapper}
-            onIndexChanged={onIndexChanged}
+            onIndexChanged={onIndexChanged} 
         >
             <View style={styles.slide}>
                 <Image
