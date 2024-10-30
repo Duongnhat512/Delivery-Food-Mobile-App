@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native'
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native'
 import React, { Component } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
@@ -51,31 +51,33 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <HomeHeader />
       <View style={styles.bodyContent}>
-        <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 15 }}>
-          <FlatList
-            data={item}
-            keyExtractor={item => item.id}
-            renderItem={renderItem}
-            horizontal={true}
-            contentContainerStyle={{ gap: 20 }}
-          />
-        </View>
-        {/* Hiển thị các món best seller */}
-        <View style={styles.bestSeller}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-            <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
-              Best Seller
-            </Text>
-            <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-              <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25 }}>
-                Xem tất cả
-              </Text>
-              <Image
-                source={require('../../assets/arrow.png')}
-              />
-            </TouchableOpacity>
+        <ScrollView>
+          <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 15 }}>
+            <FlatList
+              data={item}
+              keyExtractor={item => item.id}
+              renderItem={renderItem}
+              horizontal={true}
+              contentContainerStyle={{ gap: 20 }}
+            />
           </View>
-        </View>
+          {/* Hiển thị các món best seller */}
+          <View style={styles.bestSeller}>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
+                Best Seller
+              </Text>
+              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25 }}>
+                  Xem tất cả
+                </Text>
+                <Image
+                  source={require('../../assets/arrow.png')}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
       </View>
     </SafeAreaView>
   )

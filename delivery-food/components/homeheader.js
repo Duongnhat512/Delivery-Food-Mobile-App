@@ -30,7 +30,7 @@ export default HomeHeader = () => {
             placeholder='Tìm Kiếm'
             value={search}
             onChangeText={setSearch}
-            style={{ fontFamily: 'LeagueSpartan-Regular', fontSize: 16 }}
+            style={{ fontFamily: 'LeagueSpartan-Regular', fontSize: 16, flex: 1 }}
           />
           <TouchableOpacity>
             <Image
