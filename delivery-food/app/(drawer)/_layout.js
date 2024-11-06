@@ -36,6 +36,7 @@ const DrawerLayout = () => {
                 }}
                 drawerContent={(props) => <CustomDrawerContent {...props} />}
             >
+                <Drawer.Screen name="home" />
                 <Drawer.Screen name="orders" />
                 <Drawer.Screen name="profile" />
             </Drawer>

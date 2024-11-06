@@ -1,12 +1,12 @@
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, Alert } from 'react-native'
-import React, { Component, useEffect } from 'react'
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, ToastAndroid } from 'react-native'
+import React, { Component, useEffect, useState, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
 import { useNavigation, router } from 'expo-router'
-import { DrawerActions } from '@react-navigation/native'
+import { DrawerActions, useFocusEffect } from '@react-navigation/native'
 
 const Home = () => {
-
+  const [backPressCount, setBackPressCount] = useState(0);
   const navigation = useNavigation()
 
   const item = [
@@ -51,27 +51,32 @@ const Home = () => {
     )
   }
 
-  const handleBackButton = () => {
-    Alert.alert(
-      'Thoát',
-      'Bạn có chắc chắn muốn thoát không?',
-      [
-        { text: 'Hủy', onPress: () => null, style: 'cancel' },
-        { text: 'Đồng ý', onPress: () => BackHandler.exitApp() },
-      ],
-      { cancelable: false }
-    );
+  const handleBackButton = useCallback(() => {
+    if (backPressCount === 0) {
+      setBackPressCount(prevCount => prevCount + 1);
+      setTimeout(() => setBackPressCount(0), 2000);
+      ToastAndroid.show('Nhấn quay lại 1 lần nữa để thoát', ToastAndroid.SHORT);
+    } else if (backPressCount === 1) {
+      BackHandler.exitApp();
+    }
     return true;
-  }
+  }, [backPressCount]);
 
 
-  useEffect(() => {
-    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        handleBackButton();
+        return true;
+      };
 
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
-    };
-  }, []);
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    })
+  );
 
   return (
     <SafeAreaView style={styles.container}>
