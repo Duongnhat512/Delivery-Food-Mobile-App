@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: 30,
+    top: 50,
     right: 25,
     flexDirection: 'row',
     alignItems: 'center',
