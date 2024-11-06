@@ -3,7 +3,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, ImageBackground, Press
 import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
-import SwiperIntro from './components/SwiperIntro';
+import SwiperIntro from './components/swiperintro';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
