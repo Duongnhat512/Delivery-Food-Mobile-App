@@ -1,8 +1,11 @@
+import { router } from 'expo-router';
 import React, { useState } from 'react'
 import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, } from 'react-native'
+import { useNavigation } from '@react-navigation/native';
 
 const Orders = () => {
   const [select, setSelect] = useState("Đã đặt")
+  const navigation = useNavigation();
   const handleSelect = (status) => {
     setSelect(status);
   };
@@ -10,8 +13,9 @@ const Orders = () => {
     <SafeAreaView style={styles.container}>
       <View style={{ height: 150 }}>
         <View style={{ flexDirection: "row", alignItems: "center", flex: 1, padding: 20 }}>
-          <TouchableOpacity>
-
+          <TouchableOpacity
+            onPress={() => navigation.navigate('home')}
+          >
             <Image source={require('../../assets/BackIconArrow.png')} />
           </TouchableOpacity>
           <Text style={{ flex: 1, textAlign: "center", color: "white", fontSize: 25, fontWeight: "bold" }}>Đơn hàng</Text>
@@ -36,23 +40,6 @@ const Orders = () => {
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Image source={require('../../assets/TransferDocument.png')} />
           </ScrollView>
-        </View>
-        <View style={styles.footer}>
-          <TouchableOpacity>
-            <Image source={require('../../assets/homeFooter.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image source={require('../../assets/foodFooter.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image source={require('../../assets/heartFooter.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image source={require('../../assets/menuFooter.png')} />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Image source={require('../../assets/contactFooter.png')} />
-          </TouchableOpacity>
         </View>
       </View>
       

@@ -2,7 +2,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../components/customheader';
-import { router } from 'expo-router';
+import { router, } from 'expo-router';
 import IconLogin from '../../components/iconlogin';
 
 
@@ -12,6 +12,10 @@ const Login = () => {
 
   const showPassword = () => {
     setShowPass(!showPass);
+  }
+
+  const handleLogin = () => {
+    router.replace('/home');
   }
 
   return (
@@ -50,7 +54,7 @@ const Login = () => {
         <View style={{ alignItems: "center", gap: 10, }}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push("../(drawer)/home")}
+            onPress={handleLogin}
           >
             <Text style={[styles.text, { color: "#fff" }]}>Đăng Nhập</Text>
           </TouchableOpacity>
@@ -58,7 +62,7 @@ const Login = () => {
             hoặc đăng nhập với
           </Text>
           {/* Lựa chọn đăng nhập với tài khoản khác */}
-          <IconLogin/>
+          <IconLogin />
           <View style={{ flexDirection: "row", gap: 5 }}>
             <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
               Không có tài khoản?

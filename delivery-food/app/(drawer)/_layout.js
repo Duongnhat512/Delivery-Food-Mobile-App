@@ -14,6 +14,13 @@ const CustomDrawerContent = ({ navigation }) => {
                 <Image source={require('../../assets/orders.png')} style={styles.drawerIcon} />
                 <Text style={styles.drawerLabel}>Đơn hàng của tôi</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+                style={styles.drawerItem}
+                onPress={() => navigation.navigate('profile')}
+            >
+                <Image source={require('../../assets/user.png')} style={styles.drawerIcon} />
+                <Text style={styles.drawerLabel}>Hồ sơ của tôi</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -30,6 +37,7 @@ const DrawerLayout = () => {
                 drawerContent={(props) => <CustomDrawerContent {...props} />}
             >
                 <Drawer.Screen name="orders" />
+                <Drawer.Screen name="profile" />
             </Drawer>
         </GestureHandlerRootView>
     );

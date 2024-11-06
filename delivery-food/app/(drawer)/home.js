@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native'
-import React, { Component } from 'react'
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, Alert } from 'react-native'
+import React, { Component, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
-import { useNavigation } from 'expo-router'
+import { useNavigation, router } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native'
 
 const Home = () => {
@@ -51,6 +51,28 @@ const Home = () => {
     )
   }
 
+  const handleBackButton = () => {
+    Alert.alert(
+      'Thoát',
+      'Bạn có chắc chắn muốn thoát không?',
+      [
+        { text: 'Hủy', onPress: () => null, style: 'cancel' },
+        { text: 'Đồng ý', onPress: () => BackHandler.exitApp() },
+      ],
+      { cancelable: false }
+    );
+    return true;
+  }
+
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <HomeHeader />
@@ -72,7 +94,7 @@ const Home = () => {
                 Best Seller
               </Text>
               <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-                <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25 }}>
+                <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25, textAlign: "center" }}>
                   Xem tất cả
                 </Text>
                 <Image
