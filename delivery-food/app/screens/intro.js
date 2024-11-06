@@ -50,7 +50,7 @@ const Intro = () => {
     if (index === 2) {
       setButtonText('Bắt đầu nào!');
     }else if (index > 2){
-      router.push('/screens/welcome');
+      router.replace('/screens/welcome');
     }
     else {
       setButtonText('Tiếp tục');
@@ -79,7 +79,7 @@ const Intro = () => {
           <TouchableOpacity
             style={styles.skipButton}
             onPress={() => {
-              router.push('/screens/welcome');
+              router.replace('/screens/welcome');
             }}
           >
             <Text style={{ color: "#E95322", fontSize: 15, fontFamily: "LeagueSpartan-Regular" }}>Skip</Text>

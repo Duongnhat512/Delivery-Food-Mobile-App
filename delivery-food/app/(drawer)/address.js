@@ -1,12 +1,20 @@
 import React from 'react'
 import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Address = () => {
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
         
-    </View>
+    </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    backgroundColor:'#F5CB58'
+  }
+})
 
 export default Address;  

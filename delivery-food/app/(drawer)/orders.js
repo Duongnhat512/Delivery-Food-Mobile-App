@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import CustomHeader from '../../components/customheader';
 
 const Orders = () => {
   const [select, setSelect] = useState("Đã đặt")
@@ -11,34 +13,26 @@ const Orders = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <View style={{ height: 150 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", flex: 1, padding: 20 }}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('home')}
-          >
-            <Image source={require('../../assets/BackIconArrow.png')} />
-          </TouchableOpacity>
-          <Text style={{ flex: 1, textAlign: "center", color: "white", fontSize: 25, fontWeight: "bold" }}>Đơn hàng</Text>
-        </View>
-      </View>
+      <CustomHeader title="Đơn hàng" />
       <View style={styles.bodyContent}>
         <View style={{ flexDirection: "row", justifyContent: "space-between",marginTop:30,marginHorizontal:30 }}>
           <TouchableOpacity onPress={() => handleSelect("Đã đặt")}>
-            <Text style={[styles.filterBtn, select === "Đã đặt" && styles.selectedBtn]}>Đã đặt</Text>
+            <Text style={[styles.filterBtn, select === "Đã đặt" && styles.selectedBtn, {fontFamily: 'LeagueSpartan-Regular'}]}>Đã đặt</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleSelect("Đang giao")}>
-            <Text style={[styles.filterBtn, select === "Đang giao" && styles.selectedBtn]}>Đang giao</Text>
+            <Text style={[styles.filterBtn, select === "Đang giao" && styles.selectedBtn, {fontFamily: 'LeagueSpartan-Regular'}]}>Đang giao</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleSelect("Đã giao")}>
-            <Text style={[styles.filterBtn, select === "Đã giao" && styles.selectedBtn]}>Đã giao</Text>
+            <Text style={[styles.filterBtn, select === "Đã giao" && styles.selectedBtn, {fontFamily: 'LeagueSpartan-Regular'}]}>Đã giao</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleSelect("Đã hủy")}>
-            <Text style={[styles.filterBtn, select === "Đã hủy" && styles.selectedBtn]}>Đã hủy</Text>
+            <Text style={[styles.filterBtn, select === "Đã hủy" && styles.selectedBtn, {fontFamily: 'LeagueSpartan-Regular'}]}>Đã hủy</Text>
           </TouchableOpacity>
         </View>
         <View style={{ flex: 1 }}>
           <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Image source={require('../../assets/TransferDocument.png')} />
+            <Text style={{fontFamily:'LeagueSpartan-Regular', fontSize: 30, textAlign: 'center', width: '70%', color:'#E95322'}}>Bạn không có đơn hàng nào</Text>
           </ScrollView>
         </View>
       </View>
@@ -70,9 +64,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#E95322",
     backgroundColor: "#FFEFE8",
-    borderRadius: 10,
+    borderRadius: 20,
     width: 75,
-    textAlign: "center"
+    textAlign: "center",
+    paddingVertical: 4,
   },
   selectedBtn: {
     backgroundColor: "#E95322",
