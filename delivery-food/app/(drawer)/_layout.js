@@ -106,6 +106,7 @@ const DrawerLayout = () => {
                 <Drawer.Screen name="profile" />
                 <Drawer.Screen name="address" />
                 <Drawer.Screen name="payment" />
+               
 
             </Drawer>
         </GestureHandlerRootView>
