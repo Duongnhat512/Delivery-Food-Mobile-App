@@ -2,8 +2,12 @@ import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView }
 import React, { Component } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
+import { useNavigation } from 'expo-router'
+import { DrawerActions } from '@react-navigation/native'
 
 const Home = () => {
+
+  const navigation = useNavigation()
 
   const item = [
     {

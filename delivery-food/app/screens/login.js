@@ -50,7 +50,7 @@ const Login = () => {
         <View style={{ alignItems: "center", gap: 10, }}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push("../(tabs)/home")}
+            onPress={() => router.push("../(drawer)/home")}
           >
             <Text style={[styles.text, { color: "#fff" }]}>Đăng Nhập</Text>
           </TouchableOpacity>

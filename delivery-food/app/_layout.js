@@ -24,42 +24,24 @@ const RootLayout = () => {
     }
 
     return (
-        <Stack>
+        <Stack screenOptions={{headerShown: false}}>
             <Stack.Screen
                 name="index"
-                options={{
-                    headerShown: false,
-                }}
             />
             <Stack.Screen
                 name="screens/welcome"
-                options={{
-                    headerShown: false,
-                }}
             />
             <Stack.Screen
                 name="screens/intro"
-                options={{
-                    headerShown: false,
-                }}
             />
             <Stack.Screen
                 name="screens/login"
-                options={{
-                    headerShown: false,
-                }}
             />
             <Stack.Screen
                 name="screens/registration"
-                options={{
-                    headerShown: false,
-                }}
             />
             <Stack.Screen
-                name="(tabs)"
-                options={{
-                    headerShown: false,
-                }}
+                name="(drawer)"
             />
         </Stack>
     )

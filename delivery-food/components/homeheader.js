@@ -1,9 +1,12 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'react-native'
 import React, { Component, useState, useCallback, useEffect } from 'react'
+import { useNavigation } from 'expo-router'
+import { DrawerActions } from '@react-navigation/native'
 
 export default HomeHeader = () => {
   const [search, setSearch] = useState('')
   const [timeOfDay, setTimeOfDay] = useState('')
+  const navigation = useNavigation()
 
   const getTimeOfDay = useCallback(() => {
     const date = new Date()
@@ -21,6 +24,10 @@ export default HomeHeader = () => {
   useEffect(() => {
     getTimeOfDay()
   })
+
+  const onToggle = () => {
+    navigation.dispatch(DrawerActions.openDrawer())
+  }
 
   return (
     <View style={styles.wrapper}>
@@ -52,8 +59,10 @@ export default HomeHeader = () => {
             <Image
               source={require('../assets/bell.png')}
             />
-          </TouchableOpacity><TouchableOpacity
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.btn}
+            onPress={onToggle}
           >
             <Image
               source={require('../assets/user.png')}
