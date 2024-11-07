@@ -5,47 +5,30 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Intro from "./screens/intro";
 import Welcome from "./screens/welcome";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { storeData, getItemFor } from "./screens/storage/storageIntro";
+
+const HAS_LAUNCHED = 'HAS_LAUNCHED'
 
 export default function Page() {
-  const [appIsReady, setAppIsReady] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [hasLaunched, setHasLaunched] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        const hasSeenIntro = await AsyncStorage.getItem("hasSeenIntro");
-        if (hasSeenIntro) {
-          setShowIntro(false);
-        }
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
+    const getData = async() =>{
+      const hasLaunched = await getItemFor(HAS_LAUNCHED);
+      if(hasLaunched){
+        setHasLaunched(true);
+      }
+      else{
+        await storeData(HAS_LAUNCHED, 'true');
       }
     }
 
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
-  const handleIntroFinish = async () => {
-    try{
-      await AsyncStorage.setItem("hasSeenIntro", "true")
-      setShowIntro(false)
-    }catch(e){
-      console.warn(e)
-    }
-  }
+    getData().catch((error) => {console.log(error)})
+  }, [])
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      {showIntro ? <Intro onFinish={handleIntroFinish}/> : <Welcome />}
-      {/* <Intro/> */}
+    <View style={styles.container}>
+      {hasLaunched ? <Welcome/> : <Intro />}
     </View>
   );
 }

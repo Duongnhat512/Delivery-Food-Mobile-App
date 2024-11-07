@@ -36,6 +36,7 @@ const Registration = () => {
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
+            Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
             router.replace('/screens/login');
         } catch (error) {
             setError(error.message);
