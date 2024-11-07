@@ -1,21 +1,39 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput } from 'react-native';
+import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import CustomHeader from '../../components/customheader';
 import { router, } from 'expo-router';
 import IconLogin from '../../components/iconlogin';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { CountryModal } from 'react-native-country-picker-modal';
 
 
 const Login = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
+  const [showPass, setShowPass] = useState(true);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const auth = FIREBASE_AUTH;
+
 
   const showPassword = () => {
     setShowPass(!showPass);
   }
 
-  const handleLogin = () => {
-    router.replace('/home');
+  const handleLogin = async () => {
+    setLoading(true);
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      router.replace('/home');
+    } catch (error) {
+      setError(error.message);
+      Alert.alert('Đăng nhập thất bại', "Hãy kiểm tra lại email hoặc mật khẩu của bạn.");
+    } finally {
+      setLoading(false);
+    }
+
   }
 
   return (
@@ -27,7 +45,7 @@ const Login = () => {
         <View style={{ gap: 10 }}>
           <View style={{ gap: 5 }}>
             <Text style={styles.text}>Email hoặc số điện thoại</Text>
-            <TextInput style={styles.inputText} placeholder='example@example.com'></TextInput>
+            <TextInput value={email} onChangeText={setEmail} style={styles.inputText} placeholder='example@example.com' autoCapitalize='none'></TextInput>
           </View>
           <View style={{ gap: 5 }}>
             <Text style={styles.text}>Mật khẩu</Text>
@@ -39,6 +57,7 @@ const Login = () => {
                 secureTextEntry={showPass} // Ẩn hiện mật khẩu
                 value={password}
                 onChangeText={setPassword}
+                autoCapitalize='none'
               ></TextInput>
               <TouchableOpacity
                 onPress={showPassword}
@@ -52,12 +71,16 @@ const Login = () => {
           <Text style={{ color: "#E95322" }}>Quên mật khẩu?</Text>
         </View>
         <View style={{ alignItems: "center", gap: 10, }}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleLogin}
-          >
-            <Text style={[styles.text, { color: "#fff" }]}>Đăng Nhập</Text>
-          </TouchableOpacity>
+          {loading ? (
+            <ActivityIndicator size="large" color="#E95322" />
+          ) : (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleLogin}
+            >
+              <Text style={[styles.text, { color: "#fff" }]}>Đăng Nhập</Text>
+            </TouchableOpacity>
+          )}
           <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
             hoặc đăng nhập với
           </Text>

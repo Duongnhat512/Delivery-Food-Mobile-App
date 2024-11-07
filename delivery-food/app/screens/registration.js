@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, Pressable } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, Pressable, Alert, ActivityIndicator } from "react-native";
 import CustomHeader from "../../components/customheader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef } from "react";
@@ -6,13 +6,21 @@ import PhoneInput from 'react-native-phone-number-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format } from 'date-fns';
 import IconLogin from "../../components/iconlogin";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { router } from "expo-router";
 
 
 const Registration = () => {
     // Khai báo state
     //Khai báo password và showPass
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(true);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const auth = FIREBASE_AUTH;
+
 
     // Khai báo phoneNumber và formattedPhoneNumber
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -23,7 +31,19 @@ const Registration = () => {
     const [date, setDate] = useState(new Date());
     const [open, setOpen] = useState(false);
 
-    // 
+    // xử lý đăng ký
+    const handleSignUp = async () => {
+        setLoading(true);
+        try {
+            const response = await createUserWithEmailAndPassword(auth, email, password);
+            router.replace('/screens/login');
+        } catch (error) {
+            setError(error.message);
+            Alert.alert('Đăng ký thất bại', error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container} >
@@ -57,7 +77,7 @@ const Registration = () => {
                     {/* Email */}
                     <View>
                         <Text style={styles.text}>Email</Text>
-                        <TextInput style={styles.inputText} placeholder="example@example.com" />
+                        <TextInput style={styles.inputText} value={email} onChangeText={setEmail} placeholder="example@example.com" />
                     </View>
                     {/* Số điện thoại */}
                     <View>
@@ -101,7 +121,7 @@ const Registration = () => {
                     </View>
                 </View>
                 {/* Phần đăng ký */}
-                <View style={{ alignItems: "center", gap: 10}}>
+                <View style={{ alignItems: "center", gap: 10 }}>
                     <View style={{ alignItems: "center" }}>
                         <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
                             Để tiếp tục, bạn cần đồng ý
@@ -122,19 +142,26 @@ const Registration = () => {
                             </TouchableOpacity>
                         </View>
                     </View>
-                    <TouchableOpacity style={styles.button}>
-                        <Text style={[styles.text, { color: '#fff' }]}>Đăng ký</Text>
-                    </TouchableOpacity>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#E95322" />
+                    ) : (
+                        <TouchableOpacity
+                            style={styles.button}
+                            onPress={handleSignUp}
+                        >
+                            <Text style={[styles.text, { color: "#fff" }]}>Đăng Ký</Text>
+                        </TouchableOpacity>
+                    )}
                     <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>hoặc đăng ký với</Text>
-                    <IconLogin/>
-                    <View style={{flexDirection: "row", gap: 5, alignItems: "center"}}>
+                    <IconLogin />
+                    <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
                         <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
                             Đã có tài khoản?
                         </Text>
                         <TouchableOpacity>
                             <Text style={{ color: "#E95322" }}>Đăng nhập</Text>
                         </TouchableOpacity>
-                    </View>    
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
