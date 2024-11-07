@@ -1,8 +1,8 @@
-import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert, BackHandler, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import CustomHeader from '../../components/customheader';
-import { router, } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import IconLogin from '../../components/iconlogin';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -15,6 +15,7 @@ const Login = () => {
   const [showPass, setShowPass] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [backPressCount, setBackPressCount] = useState(0);
   const auth = FIREBASE_AUTH;
 
 
@@ -26,7 +27,10 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/home');
+      console.log('response: ', response);
+      if (response) {
+        router.replace('../(drawer)/home');
+      }
     } catch (error) {
       setError(error.message);
       Alert.alert('Đăng nhập thất bại', "Hãy kiểm tra lại email hoặc mật khẩu của bạn.");
@@ -36,9 +40,39 @@ const Login = () => {
 
   }
 
+  const handleBackButton = useCallback(() => {
+    if (backPressCount === 0) {
+      setBackPressCount(prevCount => prevCount + 1);
+      setTimeout(() => setBackPressCount(0), 2000);
+      ToastAndroid.show('Nhấn quay lại 1 lần nữa để thoát', ToastAndroid.SHORT);
+    } else if (backPressCount === 1) {
+      BackHandler.exitApp();
+    }
+    return true;
+  }, [backPressCount]);
+
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        handleBackButton();
+        return true;
+      };
+
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+      };
+    })
+  );
+
+
   return (
     <SafeAreaView style={styles.container}>
-      <CustomHeader title="Đăng nhập" />
+      <View style={styles.wrapper}>
+        <Text style={styles.title}>Đăng nhập</Text>
+      </View>
       <View style={styles.bodyContent}>
         <Text style={[styles.text, { fontSize: 24 }]}>Xin Chào!</Text>
         {/* Phần điền thông tin đăng nhập */}
@@ -142,6 +176,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 30,
-  }
+  },
+  wrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5CB58',
+    justifyContent: 'space-around',
+    width: '100%',
+    paddingBottom: "10%",
+    paddingTop: "10%",
+  },
+  title: {
+    fontSize: 24,
+    color: '#fff',
+    fontFamily: 'LeagueSpartan-Bold',
+    height: 40,
+  },
 });
 export default Login;

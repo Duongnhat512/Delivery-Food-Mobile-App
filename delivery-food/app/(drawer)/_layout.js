@@ -2,12 +2,19 @@ import { Drawer } from 'expo-router/drawer';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
+import { router } from 'expo-router';
+
 
 const CustomDrawerContent = ({ navigation }) => {
-    const handleLogout = () => {
-        navigation.navigate('login');
-    }
+    const handleLogout = async () => {
+        try {
+            await FIREBASE_AUTH.signOut();
+            router.navigate('../screens/login');
+        } catch (error) {
+            console.error('Error logging out: ', error);
+        }
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -78,7 +85,8 @@ const CustomDrawerContent = ({ navigation }) => {
             </View>
             <View>
                 <TouchableOpacity
-                    style={[styles.drawerItem, {borderBottomWidth: 0}]}
+                    style={[styles.drawerItem, { borderBottomWidth: 0 }]}
+                    onPress={handleLogout}
                 >
                     <View style={styles.drawerIcon}>
                         <Image source={require('../../assets/logout.png')} style={{ width: 30, height: 30 }} resizeMode='contain' />
@@ -106,7 +114,7 @@ const DrawerLayout = () => {
                 <Drawer.Screen name="profile" />
                 <Drawer.Screen name="address" />
                 <Drawer.Screen name="payment" />
-               
+
 
             </Drawer>
         </GestureHandlerRootView>

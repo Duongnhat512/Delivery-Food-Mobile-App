@@ -1,12 +1,15 @@
 import { Image, TouchableOpacity, Text, StyleSheet, View } from "react-native";
-import { Suspense } from "react";
+import React, { Suspense } from "react";
 import { useRouter } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
+import { useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function WelcomeScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
 
   return (
     <Suspense fallback={<Text>Loading...</Text>}>
