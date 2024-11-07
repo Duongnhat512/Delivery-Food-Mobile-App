@@ -6,9 +6,11 @@ import PhoneInput from 'react-native-phone-number-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format } from 'date-fns';
 import IconLogin from "../../components/iconlogin";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
+import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import { router } from "expo-router";
+import { doc, setDoc } from 'firebase/firestore';
+
 
 
 const Registration = () => {
@@ -17,9 +19,13 @@ const Registration = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPass, setShowPass] = useState(true);
+    const [name, setName] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const auth = FIREBASE_AUTH;
+    const db = FIREBASE_DB;
+
+    const URL_AVT = "https://i.ibb.co/sRzQXsw/marcille.png";
 
 
     // Khai báo phoneNumber và formattedPhoneNumber
@@ -36,8 +42,18 @@ const Registration = () => {
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
+            
+            const user = response.user;
+
+            await updateProfile(user, {
+                displayName: name,
+                photoURL: URL_AVT,
+            });
+            
+            console.log('response: ', response.user);
+
             Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
-            router.replace('/screens/login');
+            router.replace('../(drawer)/home');
         } catch (error) {
             setError(error.message);
             Alert.alert('Đăng ký thất bại', error.message);
@@ -55,7 +71,7 @@ const Registration = () => {
                     {/* Họ và tên */}
                     <View>
                         <Text style={styles.text}>Họ và tên</Text>
-                        <TextInput style={styles.inputText} placeholder='Nguyễn Văn A' />
+                        <TextInput value={name} onChangeText={setName} style={styles.inputText} placeholder='Nguyễn Văn A' autoCapitalize="words" />
                     </View>
                     {/* Mật khẩu */}
                     <View>
@@ -67,6 +83,7 @@ const Registration = () => {
                                 secureTextEntry={showPass}
                                 value={password}
                                 onChangeText={setPassword}
+                                autoCapitalize="none"
                             />
                             <TouchableOpacity
                                 onPress={() => setShowPass(!showPass)}
@@ -78,7 +95,7 @@ const Registration = () => {
                     {/* Email */}
                     <View>
                         <Text style={styles.text}>Email</Text>
-                        <TextInput style={styles.inputText} value={email} onChangeText={setEmail} placeholder="example@example.com" />
+                        <TextInput style={styles.inputText} value={email} autoCapitalize="none" onChangeText={setEmail} placeholder="example@example.com" />
                     </View>
                     {/* Số điện thoại */}
                     <View>

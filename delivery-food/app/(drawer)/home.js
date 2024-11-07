@@ -77,6 +77,7 @@ const Home = () => {
       };
     })
   );
+  
 
   return (
     <SafeAreaView style={styles.container}>

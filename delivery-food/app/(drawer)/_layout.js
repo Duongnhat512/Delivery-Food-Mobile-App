@@ -1,7 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Image, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { router } from 'expo-router';
 
@@ -9,8 +9,25 @@ import { router } from 'expo-router';
 const CustomDrawerContent = ({ navigation }) => {
     const handleLogout = async () => {
         try {
-            await FIREBASE_AUTH.signOut();
-            router.navigate('../screens/login');
+            Alert.alert(
+                'Đăng xuất',
+                'Bạn có chắc chắn muốn đăng xuất?',
+                [
+                    {
+                        text: 'Hủy',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                    {
+                        text: 'Đăng xuất',
+                        onPress: async () => {
+                            await FIREBASE_AUTH.signOut();
+                            router.navigate('../screens/login');
+                        },
+                    },
+                ],
+                { cancelable: false }
+            );
         } catch (error) {
             console.error('Error logging out: ', error);
         }
@@ -114,8 +131,6 @@ const DrawerLayout = () => {
                 <Drawer.Screen name="profile" />
                 <Drawer.Screen name="address" />
                 <Drawer.Screen name="payment" />
-
-
             </Drawer>
         </GestureHandlerRootView>
     );
