@@ -6,19 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
 
 const OrderCancelConfirm = () => {
-  const [selectedReasons, setSelectedReasons] = useState([]);
-  const [otherReason, setOtherReason] = useState("");
-  const navigation = useNavigation();
-
-  const handleToggleReason = (reason) => {
-    setSelectedReasons(prevReasons =>
-      prevReasons.includes(reason)
-        ? prevReasons.filter(r => r !== reason)
-        : [...prevReasons, reason]
-    );
-  };
-
-
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader title="" />
