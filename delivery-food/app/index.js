@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext } from "react";
 import * as SplashScreen from "expo-splash-screen";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Intro from "./screens/intro";
@@ -9,12 +9,13 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { router } from "expo-router";
 import Home from "./(drawer)/home";
+import { UserContext } from "./contexts/userContext";
 
 const HAS_LAUNCHED = 'HAS_LAUNCHED'
 
 export default function Page() {
   const [hasLaunched, setHasLaunched] = useState(false);
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useContext(UserContext);
 
   useEffect(() => {
     const getData = async () => {
@@ -49,6 +50,7 @@ export default function Page() {
   return (
     <View style={styles.container}>
       {hasLaunched ? <Welcome /> : <Intro />}
+      {/* <Intro/> */}
     </View>
   );
 }

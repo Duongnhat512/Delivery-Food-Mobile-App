@@ -50,7 +50,7 @@ const Intro = () => {
     if (index === 2) {
       setButtonText('Bắt đầu nào!');
     }else if (index > 2){
-      router.replace('/screens/welcome');
+      router.navigate('/screens/welcome');
     }
     else {
       setButtonText('Tiếp tục');

@@ -3,10 +3,15 @@ import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Image, StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
+import { useContext, useEffect, useState } from 'react';
+import { set } from 'date-fns';
+import { UserContext } from '../contexts/userContext';
 
 
 const CustomDrawerContent = ({ navigation }) => {
+    const { user } = useContext(UserContext);
+
     const handleLogout = async () => {
         try {
             Alert.alert(
@@ -36,6 +41,14 @@ const CustomDrawerContent = ({ navigation }) => {
     return (
         <View style={{ flex: 1 }}>
             <View>
+                <View style={{ alignItems: 'center' }}>
+                    {user && (
+                        <>
+                            <Image source={{ uri: user.photoURL }} style={{ width: 100, height: 100, borderRadius: 50 }} />
+                            <Text>{user.displayName}</Text>
+                        </>
+                    )}
+                </View>
                 <TouchableOpacity
                     style={styles.drawerItem}
                     onPress={() => navigation.navigate('orders')}

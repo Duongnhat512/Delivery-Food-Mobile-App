@@ -1,12 +1,13 @@
 import { Text, View, StyleSheet, Image, TouchableOpacity, TextInput, ActivityIndicator, Alert, BackHandler, ToastAndroid } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import CustomHeader from '../../components/customheader';
 import { router, useFocusEffect } from 'expo-router';
 import IconLogin from '../../components/iconlogin';
 import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { CountryModal } from 'react-native-country-picker-modal';
+import { UserContext } from '../contexts/userContext';
+import { set } from 'date-fns';
 
 
 const Login = () => {
@@ -17,6 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [backPressCount, setBackPressCount] = useState(0);
   const auth = FIREBASE_AUTH;
+  const { setUser } = useContext(UserContext);
 
 
   const showPassword = () => {
@@ -29,7 +31,8 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log('response: ', response);
       if (response) {
-        router.replace('../(drawer)/home');
+        setUser(response.user);
+        router.navigate('../(drawer)/home');
       }
     } catch (error) {
       setError(error.message);

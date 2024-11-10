@@ -176,7 +176,9 @@ const Registration = () => {
                         <Text style={{ fontFamily: "LeagueSpartan-Regular" }}>
                             Đã có tài khoản?
                         </Text>
-                        <TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => router.push("./login")}
+                        >
                             <Text style={{ color: "#E95322" }}>Đăng nhập</Text>
                         </TouchableOpacity>
                     </View>

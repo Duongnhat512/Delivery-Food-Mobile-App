@@ -1,17 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { getAuth, initializeAuth, getReactNativePersistence, browserLocalPersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_APP_ID, FIREBASE_MEASUREMENT_ID } from '@env';
-
-// Log environment variables to debug
-console.log("FIREBASE_API_KEY:", FIREBASE_API_KEY);
-console.log("FIREBASE_AUTH_DOMAIN:", FIREBASE_AUTH_DOMAIN);
-console.log("FIREBASE_PROJECT_ID:", FIREBASE_PROJECT_ID);
-console.log("FIREBASE_STORAGE_BUCKET:", FIREBASE_STORAGE_BUCKET);
-console.log("FIREBASE_MESSAGING_SENDER_ID:", FIREBASE_MESSAGING_SENDER_ID);
-console.log("FIREBASE_APP_ID:", FIREBASE_APP_ID);
-console.log("FIREBASE_MEASUREMENT_ID:", FIREBASE_MEASUREMENT_ID);
+import { Platform } from 'react-native';
 
 const firebaseConfig = {
     apiKey: FIREBASE_API_KEY,
@@ -27,16 +19,21 @@ const firebaseConfig = {
 export const FIREBASE_APP = initializeApp(firebaseConfig);
 
 let auth;
-try {
+if (Platform.OS === 'web') {
+  auth = getAuth(FIREBASE_APP);
+  auth.setPersistence(browserLocalPersistence);
+} else {
+  try {
     auth = initializeAuth(FIREBASE_APP, {
-        persistence: getReactNativePersistence(AsyncStorage)
+      persistence: getReactNativePersistence(AsyncStorage),
     });
-} catch (e) {
+  } catch (e) {
     if (e.code === 'auth/already-initialized') {
-        auth = getAuth(FIREBASE_APP);
+      auth = getAuth(FIREBASE_APP);
     } else {
-        throw e;
+      throw e;
     }
+  }
 }
 
 export const FIREBASE_AUTH = auth;
