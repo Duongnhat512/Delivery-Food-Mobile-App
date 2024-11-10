@@ -15,7 +15,7 @@ const HAS_LAUNCHED = 'HAS_LAUNCHED'
 
 export default function Page() {
   const [hasLaunched, setHasLaunched] = useState(false);
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
     const getData = async () => {
@@ -30,15 +30,6 @@ export default function Page() {
 
     getData().catch((error) => { console.log(error) })
 
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
-      }
-    });
-
-    return () => unsubscribe();
   }, [])
 
   useEffect(() => {

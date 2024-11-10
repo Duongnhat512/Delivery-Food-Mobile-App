@@ -36,5 +36,6 @@ if (Platform.OS === 'web') {
   }
 }
 
+
 export const FIREBASE_AUTH = auth;
 export const FIREBASE_DB = getFirestore(FIREBASE_APP);

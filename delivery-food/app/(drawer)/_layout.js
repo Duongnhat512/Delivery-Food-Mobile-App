@@ -41,11 +41,14 @@ const CustomDrawerContent = ({ navigation }) => {
     return (
         <View style={{ flex: 1 }}>
             <View>
-                <View style={{ alignItems: 'center' }}>
+                <View style={{ alignItems: 'center', flexDirection: "row", gap: 25, height: "20%"}}>
                     {user && (
                         <>
-                            <Image source={{ uri: user.photoURL }} style={{ width: 100, height: 100, borderRadius: 50 }} />
-                            <Text>{user.displayName}</Text>
+                            <Image source={{ uri: user.photoURL }} style={{ width: 50, height: 50, borderRadius: 50 }} />
+                            <View>
+                                <Text style={{color: "#fff", fontSize: 20, fontFamily: "LeagueSpartan-Regular"}}>{user.displayName}</Text>
+                                <Text style={{color: "#fff", fontFamily: "LeagueSpartan-Regular"}}>{user.email}</Text>
+                            </View>
                         </>
                     )}
                 </View>

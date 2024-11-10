@@ -2,9 +2,10 @@ import { Stack } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from 'expo-splash-screen';
-import { UserContext, UserProvider } from "./contexts/userContext";
+import { UserContext, UserProvider, useUser } from "./contexts/userContext";
 
 const RootLayout = () => {
+    const user = useUser();
 
     const [fontsLoaded] = useFonts({
         'LeagueSpartan-Regular': require('../assets/fonts/LeagueSpartan-Regular.ttf'),
@@ -26,26 +27,32 @@ const RootLayout = () => {
 
     return (
         <UserProvider>
-            <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen
-                    name="index"
-                />
-                <Stack.Screen
-                    name="screens/welcome"
-                />
-                <Stack.Screen
-                    name="screens/intro"
-                />
-                <Stack.Screen
-                    name="screens/login"
-                />
-                <Stack.Screen
-                    name="screens/registration"
-                />
-                <Stack.Screen
-                    name="(drawer)"
-                />
-            </Stack>
+            {user ? (
+                <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen
+                        name="(drawer)"
+                    />
+                </Stack>
+            ) : (
+                <Stack screenOptions={{ headerShown: false }}>
+                    <Stack.Screen
+                        name="index"
+                    />
+                    <Stack.Screen
+                        name="screens/welcome"
+                    />
+                    <Stack.Screen
+                        name="screens/intro"
+                    />
+                    <Stack.Screen
+                        name="screens/login"
+                    />
+                    <Stack.Screen
+                        name="screens/registration"
+                    />
+                </Stack>
+            )}
+
         </UserProvider>
     )
 }

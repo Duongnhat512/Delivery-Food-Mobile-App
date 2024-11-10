@@ -9,7 +9,7 @@ import IconLogin from "../../components/iconlogin";
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase/auth";
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import { router } from "expo-router";
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 
 
@@ -43,17 +43,32 @@ const Registration = () => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
             
+            
             const user = response.user;
-
+            
             await updateProfile(user, {
                 displayName: name,
                 photoURL: URL_AVT,
             });
+
+            try {
+                const docRef = await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: name,
+                    email: email,
+                    phoneNumber: formattedPhoneNumber,
+                    birthDate: format(date, 'dd/MM/yyyy'),
+                    photoURL: URL_AVT,
+                    time_created: new Date(),
+                });
+                console.log("Document written with ID: ", docRef.uid);
+              } catch (e) {
+                console.error("Error adding document: ", e);
+              }
             
             console.log('response: ', response.user);
-
             Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
-            router.replace('../(drawer)/home');
+
         } catch (error) {
             setError(error.message);
             Alert.alert('Đăng ký thất bại', error.message);
