@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, ActivityIndicator } from 'react-native'
 import CustomHeader from '../../components/customheader';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../contexts/userContext';
@@ -7,26 +7,14 @@ import { doc, getDoc } from 'firebase/firestore';
 import { FIREBASE_DB } from '../../FirebaseConfig';
 
 const Profile = () => {
-  const { user } = useContext(UserContext);
-  const [userData, setUserData] = useState(null);
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        const userDocRef = doc(FIREBASE_DB, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUserData(userDoc.data());
-        } else {
-          console.log('No such document!');
-        }
-      }
-    };
-
-    fetchUserData();
-  }, [user]);
+  const { user, userData } = useContext(UserContext);
 
   if (!userData) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#E95322" />
+      </View>
+    );
   }
 
   return (
@@ -116,6 +104,11 @@ const styles = StyleSheet.create({
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
     padding: 30,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 })
 

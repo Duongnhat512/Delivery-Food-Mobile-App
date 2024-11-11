@@ -29,7 +29,6 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log('response: ', response);
       if (response) {
         setUser(response.user);
         router.navigate('../(drawer)/home');

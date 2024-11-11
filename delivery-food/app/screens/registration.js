@@ -43,7 +43,6 @@ const Registration = () => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
             
-            
             const user = response.user;
             
             await updateProfile(user, {

@@ -1,13 +1,11 @@
 import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, ToastAndroid } from 'react-native'
-import React, { Component, useEffect, useState, useCallback } from 'react'
+import React, { Component, useEffect, useState, useCallback, useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
-import { useNavigation, router } from 'expo-router'
 import { DrawerActions, useFocusEffect } from '@react-navigation/native'
 
 const Home = () => {
   const [backPressCount, setBackPressCount] = useState(0);
-  const navigation = useNavigation()
 
   const item = [
     {
