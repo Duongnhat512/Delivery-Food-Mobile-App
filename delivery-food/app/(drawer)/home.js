@@ -1,11 +1,61 @@
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, ToastAndroid } from 'react-native'
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView, BackHandler, ToastAndroid, ActivityIndicator, SectionList, ImageBackground } from 'react-native'
 import React, { Component, useEffect, useState, useCallback, useContext } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import HomeHeader from '../../components/homeheader'
 import { DrawerActions, useFocusEffect } from '@react-navigation/native'
+import axios from 'axios'
+import { UserContext } from '../contexts/userContext'
 
 const Home = () => {
   const [backPressCount, setBackPressCount] = useState(0);
+  const [menuItems, setMenuItems] = useState([]);
+  const [lastDocId, setLastDocId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const { user } = useContext(UserContext);
+
+  const token = user.accessToken;
+
+  const fetchMenuItems = async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true)
+
+    try {
+      const response = await axios.get('http://192.168.2.59:5000/menu_items', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        params: {
+          limit: 10,
+          startAfter: lastDocId
+        }
+      });
+
+      const newMenuItems = response.data;
+      setMenuItems(prevMenuItems => [...prevMenuItems, ...newMenuItems]);
+
+      if (newMenuItems.length > 0) {
+        setLastDocId(newMenuItems[newMenuItems.length - 1].id);
+      } else {
+        setHasMore(false);
+      }
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, [])
+
+  const renderFooter = () => {
+    if (!loading) return null;
+    return <ActivityIndicator size="large" color="#FFD8C7" />
+  }
 
   const item = [
     {
@@ -49,6 +99,16 @@ const Home = () => {
     )
   }
 
+  const renderFood = ({ item }) => {
+    return (
+      <TouchableOpacity style={{ width: "49%", height: 140, borderRadius: 20, overflow: "hidden" }}>
+        <ImageBackground source={{ uri: item.image }} style={{ flex: 1 }}>
+
+        </ImageBackground>
+      </TouchableOpacity>
+    )
+  }
+
   const handleBackButton = useCallback(() => {
     if (backPressCount === 0) {
       setBackPressCount(prevCount => prevCount + 1);
@@ -75,39 +135,56 @@ const Home = () => {
       };
     })
   );
-  
+
 
   return (
     <SafeAreaView style={styles.container}>
       <HomeHeader />
       <View style={styles.bodyContent}>
-        <ScrollView>
-          <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 15 }}>
-            <FlatList
-              data={item}
-              keyExtractor={item => item.id}
-              renderItem={renderItem}
-              horizontal={true}
-              contentContainerStyle={{ gap: 20 }}
-            />
-          </View>
-          {/* Hiển thị các món best seller */}
-          <View style={styles.bestSeller}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
-                Best Seller
-              </Text>
-              <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-                <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25, textAlign: "center" }}>
-                  Xem tất cả
+        <View>
+          <FlatList
+            data={menuItems}
+            keyExtractor={item => item.id}
+            renderItem={renderFood}
+            onEndReached={fetchMenuItems}
+            onEndReachedThreshold={1}
+            numColumns={2}
+            columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 20 }}
+            ListFooterComponent={renderFooter}
+            ListHeaderComponent={
+              <>
+                <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 15 }}>
+                  <FlatList
+                    data={item}
+                    keyExtractor={item => item.id}
+                    renderItem={renderItem}
+                    horizontal={true}
+                    contentContainerStyle={{ gap: 20 }}
+                  />
+                </View>
+                {/* Hiển thị các món best seller */}
+                <View style={styles.bestSeller}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                    <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
+                      Best Seller
+                    </Text>
+                    <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+                      <Text style={{ fontFamily: "LeagueSpartan-SemiBold", color: "#E95322", height: 25, textAlign: "center" }}>
+                        Xem tất cả
+                      </Text>
+                      <Image
+                        source={require('../../assets/arrow.png')}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginVertical: 20 }}>
+                  Đề xuất
                 </Text>
-                <Image
-                  source={require('../../assets/arrow.png')}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
+              </>
+            }
+          />
+        </View>
       </View>
     </SafeAreaView>
   )
