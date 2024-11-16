@@ -33,11 +33,9 @@ const authenticate = async (req, res, next) => {
     }
 };
 
-app.get('/', (req, res) => {
-    res.send('Welcome to the API');
-});
+app.use(authenticate);
 
-app.get('/menu_items', authenticate, async (req, res) => {
+app.get('/menu_items', async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const startAfter = req.query.startAfter || '';
 
