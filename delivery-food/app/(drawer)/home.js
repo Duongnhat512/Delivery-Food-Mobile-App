@@ -5,6 +5,7 @@ import HomeHeader from '../../components/homeheader'
 import { DrawerActions, useFocusEffect } from '@react-navigation/native'
 import axios from 'axios'
 import { UserContext } from '../contexts/userContext'
+import MenuItem from '../../components/menuItem'
 
 const Home = () => {
   const [backPressCount, setBackPressCount] = useState(0);
@@ -54,7 +55,7 @@ const Home = () => {
 
   const renderFooter = () => {
     if (!loading) return null;
-    return <ActivityIndicator size="large" color="#FFD8C7" />
+    return <ActivityIndicator size="large" color="#E95322" style={{backgroundColor: "#E2E1E1"}}/>
   }
 
   const item = [
@@ -101,11 +102,7 @@ const Home = () => {
 
   const renderFood = ({ item }) => {
     return (
-      <TouchableOpacity style={{ width: "49%", height: 140, borderRadius: 20, overflow: "hidden" }}>
-        <ImageBackground source={{ uri: item.image }} style={{ flex: 1 }}>
-
-        </ImageBackground>
-      </TouchableOpacity>
+      <MenuItem item={item} />
     )
   }
 
@@ -141,30 +138,28 @@ const Home = () => {
     <SafeAreaView style={styles.container}>
       <HomeHeader />
       <View style={styles.bodyContent}>
-        <View>
+        <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", marginHorizontal: 20, paddingBottom: 15, position: "static", alignItems: "center" }}>
+          <FlatList
+            data={item}
+            keyExtractor={item => item.id}
+            renderItem={renderItem}
+            horizontal={true}
+            contentContainerStyle={{ gap: 20 }}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
           <FlatList
             data={menuItems}
             keyExtractor={item => item.id}
             renderItem={renderFood}
             onEndReached={fetchMenuItems}
             onEndReachedThreshold={1}
-            numColumns={2}
-            columnWrapperStyle={{ justifyContent: "space-between", marginBottom: 20 }}
             ListFooterComponent={renderFooter}
             ListHeaderComponent={
               <>
-                <View style={{ borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 15 }}>
-                  <FlatList
-                    data={item}
-                    keyExtractor={item => item.id}
-                    renderItem={renderItem}
-                    horizontal={true}
-                    contentContainerStyle={{ gap: 20 }}
-                  />
-                </View>
                 {/* Hiển thị các món best seller */}
                 <View style={styles.bestSeller}>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20 }}>
                     <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
                       Best Seller
                     </Text>
@@ -178,12 +173,13 @@ const Home = () => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginVertical: 20 }}>
+                <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginTop: 20, borderBottomWidth: 1, borderBottomColor: "#FFD8C7", marginHorizontal: 20}}>
                   Đề xuất
                 </Text>
               </>
             }
           />
+
         </View>
       </View>
     </SafeAreaView>
@@ -201,7 +197,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
-    padding: 30,
+    paddingTop: 30,
   },
   menuItem: {
     backgroundColor: "#F3E9B5",
