@@ -32,6 +32,9 @@ const RootLayout = () => {
                     <Stack.Screen
                         name="(drawer)"
                     />
+                    <Stack.Screen
+                        name="screens/foodDetails"
+                    />
                 </Stack>
             ) : (
                 <Stack screenOptions={{ headerShown: false }}>

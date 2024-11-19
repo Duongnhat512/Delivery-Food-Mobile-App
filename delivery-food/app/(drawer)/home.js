@@ -20,10 +20,11 @@ const Home = () => {
   const fetchMenuItems = async () => {
     if (loading || !hasMore) return;
 
+    console.log(token)
     setLoading(true)
 
     try {
-      const response = await axios.get('http://192.168.2.59:5000/menu_items', {
+      const response = await axios.get('http://192.168.2.59:5000/v1/menu_items', {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -71,7 +72,7 @@ const Home = () => {
     },
     {
       id: 3,
-      name: "Đồ nước",
+      name: "Đồ uống",
       img: require('../../assets/drinks.png')
     },
     {
