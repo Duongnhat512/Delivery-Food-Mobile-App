@@ -5,11 +5,20 @@ const admin = firebaseConfig.admin;
 const getOrderDetailsChuaGiaoTheoCustomer = async (req, res) => {
     try {
         const customer_id = req.user.uid;
-        const orderDetailsRef = db.collection('orders');
-        const snapshot = await orderDetailsRef
-            .where('customer_id', '==', customer_id)
-            .get();
+        const limit = parseInt(req.query.limit) || 10;
+        const startAfter = req.query.startAfter || '';
 
+        let query = db.collection('orders')
+            .where('customer_id', '==', customer_id)
+            .orderBy('created_at', 'desc')
+            .limit(limit);
+        
+        if (startAfter) {
+            const startAfterDoc = await db.collection('orders').doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+
+        const snapshot = await query.get();
         const orderDetails = [];
         snapshot.forEach(doc => {
             const order = doc.data();
@@ -32,11 +41,20 @@ const getOrderDetailsChuaGiaoTheoCustomer = async (req, res) => {
 const getOrderDetailsDaGiaoTheoCustomer = async (req, res) => {
     try {
         const customer_id = req.user.uid;
-        const orderDetailsRef = db.collection('orders');
-        const snapshot = await orderDetailsRef
-            .where('customer_id', '==', customer_id)
-            .get();
+        const limit = parseInt(req.query.limit) || 10;
+        const startAfter = req.query.startAfter || '';
 
+        let query = db.collection('orders')
+            .where('customer_id', '==', customer_id)
+            .orderBy('created_at', 'desc')
+            .limit(limit);
+        
+        if (startAfter) {
+            const startAfterDoc = await db.collection('orders').doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+
+        const snapshot = await query.get();
         const orderDetails = [];
         snapshot.forEach(doc => {
             const order = doc.data();
@@ -59,12 +77,22 @@ const getOrderDetailsDaGiaoTheoCustomer = async (req, res) => {
 const getOrderDetailsDangGiaoTheoCustomer = async (req, res) => {
     try {
         const customer_id = req.user.uid;
-        const orderDetailsRef = db.collection('orders');
-        const snapshot = await orderDetailsRef
+        const limit = parseInt(req.query.limit) || 10;
+        const startAfter = req.query.startAfter || '';
+        
+        let query = db.collection('orders')
             .where('customer_id', '==', customer_id)
-            .get();
+            .orderBy('created_at', 'desc')
+            .limit(limit);
 
+        if (startAfter) {
+            const startAfterDoc = await db.collection('orders').doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+
+        const snapshot = await query.get();
         const orderDetails = [];
+        
         snapshot.forEach(doc => {
             const order = doc.data();
             const filteredOrderDetails = order.order_details.filter(detail => detail.status === 'Đang giao');
@@ -83,8 +111,74 @@ const getOrderDetailsDangGiaoTheoCustomer = async (req, res) => {
     }
 }
 
+const updateStatusOrderDetail = async (req, res) => {
+    try{
+        const order_id = req.params.order_id;
+        const item_id = req.params.item_id;
+        const status = req.body.status;
+        const orderRef = db.collection('orders').doc(order_id);
+        const order = await orderRef.get();
+        if (!order.exists) {
+            res.status(404).send('Order not found');
+            return;
+        }
+        const orderData = order.data();
+        const orderDetails = orderData.order_details;
+        const itemIndex = orderDetails.findIndex(item => item.id === item_id);
+        if (itemIndex === -1) {
+            res.status(404).send('Item not found');
+            return;
+        }
+        orderDetails[itemIndex].status = status;
+        await orderRef.update({
+            order_details: orderDetails
+        });
+        res.status(200).send('Updated');
+    }catch(error){
+        res.status(500).send(error.message);
+    }
+}
+
+const getOrderDetailsDaHuyTheoCustomer = async (req, res) => {
+    try {
+        const customer_id = req.user.uid;
+        const limit = parseInt(req.query.limit) || 10;
+        const startAfter = req.query.startAfter || '';
+
+        let query = db.collection('orders')
+            .where('customer_id', '==', customer_id)
+            .orderBy('created_at', 'desc')
+            .limit(limit);
+        
+        if (startAfter) {
+            const startAfterDoc = await db.collection('orders').doc(startAfter).get();
+            query = query.startAfter(startAfterDoc);
+        }
+
+        const snapshot = await query.get();
+        const orderDetails = [];
+        snapshot.forEach(doc => {
+            const order = doc.data();
+            const filteredOrderDetails = order.order_details.filter(detail => detail.status === 'Đã hủy');
+            if (filteredOrderDetails.length > 0) {
+                orderDetails.push({
+                    id: doc.id,
+                    ...order,
+                    order_details: filteredOrderDetails
+                });
+            }
+        });
+
+        res.status(200).json(orderDetails);
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 module.exports = {
     getOrderDetailsChuaGiaoTheoCustomer, 
     getOrderDetailsDaGiaoTheoCustomer, 
-    getOrderDetailsDangGiaoTheoCustomer
+    getOrderDetailsDangGiaoTheoCustomer,
+    updateStatusOrderDetail,
+    getOrderDetailsDaHuyTheoCustomer
 }
