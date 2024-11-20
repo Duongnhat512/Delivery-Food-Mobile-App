@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, FlatList, } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
@@ -19,6 +19,7 @@ const Orders = () => {
   const [canceledOrders, setCanceledOrders] = useState([]);
 
   const token = user.accessToken;
+  const link = process.env.LINK_API;
 
   const fetchOrders = async () => {
     if (loading || !hasMore) return;
@@ -26,7 +27,7 @@ const Orders = () => {
     setLoading(true)
 
     try {
-      const response = await axios.get('http://192.168.2.59:5000/order_details/get_by_user_not_delivered', {
+      const response = await axios.get(`${link}/v1/order_details/get_by_user_not_delivered`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -41,6 +42,7 @@ const Orders = () => {
 
       if (newOrders.length > 0) {
         setLastDocId(newOrders[newOrders.length - 1].id);
+
       } else {
         setHasMore(false);
       }
@@ -52,6 +54,20 @@ const Orders = () => {
     }
   }
 
+  const fetchFood = async (food_id) => {
+    try {
+      const response = await axios.get(`${link}/v1/menu_items/?id=${food_id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      return response.data;
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     fetchOrders();
   }, [])
@@ -60,18 +76,70 @@ const Orders = () => {
     setSelect(status);
   };
 
-  const renderOrders = () => {
-    return(
+  const renderOrders = ({ item }) => {
+    return (
       <View>
+        {item.order_details && item.order_details.map((detail, index) => (
+          <View key={index}>
+            <FoodDetail food_id={detail.item_id} quantity={detail.quantity} created_at={item.created_at}/>
+          </View>
+        ))}
       </View>
-    )
+    );
+  }
+
+  const FoodDetail = ({ food_id, quantity, created_at }) => {
+    const [food, setFood] = useState(null);
+
+    useEffect(() => {
+      const fetchData = async () => {
+        const foodData = await fetchFood(food_id);
+        setFood(foodData);
+      };
+
+      fetchData();
+    }, [food_id]);
+
+    if (!food) {
+      return <Text>Loading...</Text>;
+    }
+
+    return (
+      <View style={{ flexDirection: "row", gap: 10, marginHorizontal: 30, paddingVertical: 15, borderBottomWidth: 1, borderColor: "#FFD8C7" }}>
+        <TouchableOpacity>
+          <Image
+            source={{ uri: food.image }}
+            resizeMode='cover'
+            style={{ width: 70, height: 100, borderRadius: 20 }}
+          />
+        </TouchableOpacity>
+        <View style={{ width: "40%", padding: 5, gap: 5}}>
+          <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold" }} numberOfLines={2}>{food.name}</Text>
+          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular",}}>{created_at}</Text>
+          <TouchableOpacity
+            style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
+          >
+            <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", color: "#fff", }}>Hủy đơn</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={{alignItems: "flex-end", padding: 5}}>
+          <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold", color: "#E95322" }}>{food.price}đ</Text>
+          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular",}}>Số lượng: {quantity}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  const renderFooter = () => {
+    if (!loading) return null;
+    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#E2E1E1" }} />
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader title="Đơn hàng" />
       <View style={styles.bodyContent}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 30, marginHorizontal: 30 }}>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 30, marginHorizontal: 30, borderBottomWidth: 1, paddingBottom: 20, borderColor: "#FFD8C7" }}>
           <TouchableOpacity onPress={() => handleSelect("Đã đặt")}>
             <Text style={[styles.filterBtn, select === "Đã đặt" && styles.selectedBtn, { fontFamily: 'LeagueSpartan-Regular' }]}>Đã đặt</Text>
           </TouchableOpacity>
@@ -87,7 +155,14 @@ const Orders = () => {
         </View>
         {orders.length > 0 ? (
           <>
-            {loading && <ActivityIndicator size="large" color="#E95322" style={{ marginBottom: 10 }} />}
+            <FlatList
+              data={orders}
+              keyExtractor={(item) => item.id}
+              renderItem={renderOrders}
+              onEndReached={fetchOrders}
+              onEndReachedThreshold={0.1}
+              ListFooterComponent={renderFooter}
+            />
           </>
         ) : (
           <View style={{ flex: 1 }}>

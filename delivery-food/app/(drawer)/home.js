@@ -15,6 +15,8 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
 
+  const link = process.env.LINK_API
+
   const token = user.accessToken;
 
   const fetchMenuItems = async () => {
@@ -24,7 +26,7 @@ const Home = () => {
     setLoading(true)
 
     try {
-      const response = await axios.get('http://192.168.2.59:5000/v1/menu_items', {
+      const response = await axios.get(`${link}/v1/menu_items/tat_ca`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -89,7 +91,7 @@ const Home = () => {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ gap: 5, alignItems: "center", width: 50 }}>
+      <View style={{ gap: 5, alignItems: "center", width: 50 }}>
         <View style={styles.menuItem}>
           <Image source={item.img} />
         </View>
@@ -97,7 +99,7 @@ const Home = () => {
           numberOfLines={1}
           ellipsizeMode='tail'
         >{item.name}</Text>
-      </TouchableOpacity>
+      </View>
     )
   }
 
