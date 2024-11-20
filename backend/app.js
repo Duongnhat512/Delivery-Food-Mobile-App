@@ -15,11 +15,17 @@ viewEngine(app);
 app.use(express.json());
 app.use(authMiddleware);
 
-app.use('/v1', menuRoutes)
+// Routes
 
-app.use('/v1', orderRoutes);
+// Menu items routes
+app.use('/v1/menu_items', menuRoutes)
 
-app.use('/order_details', orderDetailRoutes);
+// Order routes
+app.use('/v1/orders', orderRoutes);
+
+// Order details routes
+app.use('/v1/order_details', orderDetailRoutes);
+
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
