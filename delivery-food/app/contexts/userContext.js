@@ -9,12 +9,14 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [userData, setUserData] = useState(null);
+    const [token, setToken] = useState(null);
 
     useEffect(() => {
         const auth = getAuth();
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
             setLoading(false);
+            setToken(user ? user.accessToken : null);
         });
         return () => unsubscribe();
     }, []);

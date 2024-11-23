@@ -12,7 +12,7 @@ const MenuItem = ({ item }) => {
         <View>
             <TouchableOpacity
                 style={styles.item}
-                onPress={() => router.push({ pathname: 'screens/foodDetails', params: item.id  })}
+                onPress={() => router.push({ pathname: 'screens/foodDetails', params: { item: JSON.stringify(item) } })}
             >
                 <ImageBackground source={{ uri: item.image }} style={{ width: 100, height: 100 }} />
                 <View style={{ flex: 1 }}>

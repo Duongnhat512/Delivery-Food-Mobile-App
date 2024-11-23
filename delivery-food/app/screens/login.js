@@ -31,7 +31,7 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       if (response) {
         setUser(response.user);
-        router.navigate('../(drawer)/home');
+        router.push('../(drawer)/home');
       }
     } catch (error) {
       setError(error.message);

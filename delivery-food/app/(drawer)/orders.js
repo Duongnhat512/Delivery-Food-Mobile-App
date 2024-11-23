@@ -19,15 +19,17 @@ const Orders = () => {
   const [canceledOrders, setCanceledOrders] = useState([]);
 
   const token = user.accessToken;
-  const link = process.env.LINK_API;
+  const link = "http://192.168.2.59:5000/api/v1";
 
   const fetchOrders = async () => {
     if (loading || !hasMore) return;
 
     setLoading(true)
+    console.log(link);
+
 
     try {
-      const response = await axios.get(`${link}/v1/order_details/get_by_user_not_delivered`, {
+      const response = await axios.get(`${link}/order_details/get_by_user_not_delivered`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -56,7 +58,7 @@ const Orders = () => {
 
   const fetchFood = async (food_id) => {
     try {
-      const response = await axios.get(`${link}/v1/menu_items/?id=${food_id}`, {
+      const response = await axios.get(`${link}/menu_items/?id=${food_id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -81,7 +83,7 @@ const Orders = () => {
       <View>
         {item.order_details && item.order_details.map((detail, index) => (
           <View key={index}>
-            <FoodDetail food_id={detail.item_id} quantity={detail.quantity} created_at={item.created_at}/>
+            <FoodDetail food_id={detail.item_id} quantity={detail.quantity} created_at={item.created_at} />
           </View>
         ))}
       </View>
@@ -101,7 +103,7 @@ const Orders = () => {
     }, [food_id]);
 
     if (!food) {
-      return <Text>Loading...</Text>;
+      return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#fff" }} />
     }
 
     return (
@@ -113,18 +115,18 @@ const Orders = () => {
             style={{ width: 70, height: 100, borderRadius: 20 }}
           />
         </TouchableOpacity>
-        <View style={{ width: "40%", padding: 5, gap: 5}}>
+        <View style={{ width: "40%", padding: 5, gap: 5 }}>
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold" }} numberOfLines={2}>{food.name}</Text>
-          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular",}}>{created_at}</Text>
+          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>{created_at}</Text>
           <TouchableOpacity
             style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
           >
             <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", color: "#fff", }}>Hủy đơn</Text>
           </TouchableOpacity>
         </View>
-        <View style={{alignItems: "flex-end", padding: 5}}>
+        <View style={{ alignItems: "flex-end", padding: 5 }}>
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold", color: "#E95322" }}>{food.price}đ</Text>
-          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular",}}>Số lượng: {quantity}</Text>
+          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>Số lượng: {quantity}</Text>
         </View>
       </View>
     );
@@ -132,7 +134,7 @@ const Orders = () => {
 
   const renderFooter = () => {
     if (!loading) return null;
-    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#E2E1E1" }} />
+    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#fff" }} />
   }
 
   return (

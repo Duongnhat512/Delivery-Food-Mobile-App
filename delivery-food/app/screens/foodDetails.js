@@ -1,18 +1,19 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
 import React, { Component, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { useRoute } from '@react-navigation/native'
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
 const FoodDetails = () => {
-    const route = useRoute();
-    const item = route.params;
+    const router = useRouter();
+    const { item } = useLocalSearchParams();
+    const parsedItem = JSON.parse(item);
 
     useEffect(() => {
-        console.log(item)
-    },[])
+        console.log(parsedItem.name)
+    }, [])
 
     return (
-        <View style={{flex: 1, backgroundColor: "#F5CB58"}}>
+        <View style={{ flex: 1, backgroundColor: "#F5CB58" }}>
             <View style={styles.wrapper}>
                 <TouchableOpacity style={styles.button} onPress={() => router.back()}>
                     <Image
@@ -21,7 +22,7 @@ const FoodDetails = () => {
                         resizeMode="contain"
                     />
                 </TouchableOpacity>
-                <Text style={styles.title}></Text>
+                <Text style={styles.title}>{parsedItem.name}</Text>
                 <View></View>
             </View>
             <View style={styles.bodyContent}>
@@ -48,12 +49,12 @@ const styles = StyleSheet.create({
         height: 40,
     },
     bodyContent: {
-      flex: 4,
-      backgroundColor: '#fff',
-      width: '100%',
-      borderTopStartRadius: 30,
-      borderTopEndRadius: 30,
-      padding: 30,
+        flex: 4,
+        backgroundColor: '#fff',
+        width: '100%',
+        borderTopStartRadius: 30,
+        borderTopEndRadius: 30,
+        padding: 30,
     },
 })
 

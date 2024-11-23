@@ -27,7 +27,7 @@ const CustomDrawerContent = ({ navigation }) => {
                         text: 'Đăng xuất',
                         onPress: async () => {
                             await FIREBASE_AUTH.signOut();
-                            router.navigate('../screens/login');
+                            router.push('../screens/login');
                         },
                     },
                 ],

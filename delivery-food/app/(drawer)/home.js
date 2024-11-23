@@ -14,19 +14,18 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
-
-  const link = process.env.LINK_API
-
   const token = user.accessToken;
+
+  const link = "http://192.168.2.59:5000/api/v1";
 
   const fetchMenuItems = async () => {
     if (loading || !hasMore) return;
 
-    console.log(token)
     setLoading(true)
+    console.log(token)
 
     try {
-      const response = await axios.get(`${link}/v1/menu_items/tat_ca`, {
+      const response = await axios.get(`${link}/menu_items/tat_ca`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },

@@ -10,6 +10,7 @@ import { createUserWithEmailAndPassword, getAuth, updateProfile } from "firebase
 import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import { router } from "expo-router";
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import axios from "axios";
 
 
 
@@ -42,9 +43,9 @@ const Registration = () => {
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
-            
+
             const user = response.user;
-            
+
             await updateProfile(user, {
                 displayName: name,
                 photoURL: URL_AVT,
@@ -60,11 +61,10 @@ const Registration = () => {
                     photoURL: URL_AVT,
                     time_created: new Date(),
                 });
-                console.log("Document written with ID: ", docRef.uid);
               } catch (e) {
                 console.error("Error adding document: ", e);
               }
-            
+
             console.log('response: ', response.user);
             Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
 
@@ -74,6 +74,7 @@ const Registration = () => {
         } finally {
             setLoading(false);
         }
+
     }
 
     return (

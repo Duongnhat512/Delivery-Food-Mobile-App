@@ -7,6 +7,8 @@ const getMenuItems = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const startAfter = req.query.startAfter || '';
 
+    console.log(limit, startAfter);
+
     try {
         let query = db.collection('menu_items').orderBy('name').limit(limit);
 

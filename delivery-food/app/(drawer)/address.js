@@ -37,21 +37,19 @@ const DeliveryAddress = () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
       >
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <View style={styles.bodyContent}>
-            <FlatList
-              data={dataAddress}
-              renderItem={renderItem}
-              keyExtractor={item => item.id}
-              style={styles.flatList}
-            />
-            <View style={styles.addButtonContainer}>
-              <TouchableOpacity style={styles.addButton}>
-                <Text style={styles.addButtonText}>Thêm địa chỉ </Text>
-              </TouchableOpacity>
-            </View>
+        <View style={styles.bodyContent}>
+          <FlatList
+            data={dataAddress}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            style={styles.flatList}
+          />
+          <View style={styles.addButtonContainer}>
+            <TouchableOpacity style={styles.addButton}>
+              <Text style={styles.addButtonText}>Thêm địa chỉ </Text>
+            </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -74,7 +72,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
-    padding: 20,
+    padding: 30,
   },
 
   addButtonContainer: {
@@ -83,26 +81,28 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   addButton: {
-    backgroundColor: "#FFD8C7",
+    backgroundColor: "#FFEFE8",
     padding: 10,
-    borderRadius: 10,
+    borderRadius: 20,
     alignItems: "center",
     width: "50%",
   },
   addButtonText: {
     color: "#E95322",
-    fontWeight: "bold",
+    fontFamily: "LeagueSpartan-SemiBold",
   },
   flatList: {
     marginTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#FFD8C7',
   },
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'justify-between',
     borderBottomColor: '#FFD8C7',
-    borderBottomWidth: 2,
-    paddingVertical: 20,
+    borderBottomWidth: 1,
+    paddingVertical: 25,
 
   },
   homeIcon: {
