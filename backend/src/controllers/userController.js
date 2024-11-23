@@ -34,6 +34,18 @@ const getUser = async(req, res) => {
     }
 }
 
+const updateAddress = async(req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { address } = req.body;
+        await db.collection('users').doc(uid).update({ address });
+        res.status(200).send('Address updated');
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 module.exports = {
-    signUp, getUser
+    signUp, getUser, updateAddress
 }
