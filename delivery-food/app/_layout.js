@@ -33,7 +33,7 @@ const RootLayout = () => {
                         name="(drawer)"
                     />
                     <Stack.Screen
-                        name="screens/foodDetails"
+                        name="screens/addAddress"
                     />
                 </Stack>
             ) : (

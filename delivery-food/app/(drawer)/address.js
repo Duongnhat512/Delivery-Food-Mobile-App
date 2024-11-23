@@ -1,5 +1,5 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -8,12 +8,7 @@ import CustomHeader from '../../components/customheader';
 const DeliveryAddress = () => {
   const [address, setAddress] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const navigation = useNavigation();
-
-  const dataAddress = [
-    { id: '1', name: 'Nguyen Van A', address: '123 Đường ABC, Quận 1, TP.HCM' },
-    { id: '2', name: 'Tran Thi B', address: '456 Đường XYZ, Quận 2, TP.HCM' }
-  ];
+  const router = useRouter();
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => setSelectedId(item.id)}>
@@ -28,6 +23,9 @@ const DeliveryAddress = () => {
     </TouchableOpacity>
   );
 
+  useEffect(() => {
+
+  }, [])
 
 
   return (
@@ -39,13 +37,16 @@ const DeliveryAddress = () => {
       >
         <View style={styles.bodyContent}>
           <FlatList
-            data={dataAddress}
+            data={address}
             renderItem={renderItem}
             keyExtractor={item => item.id}
-            style={styles.flatList}
+            style={[styles.flatList, { borderTopWidth: address.length > 0 ? 1 : 0 }]}
           />
           <View style={styles.addButtonContainer}>
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => router.push('../screens/addAddress')}
+            >
               <Text style={styles.addButtonText}>Thêm địa chỉ </Text>
             </TouchableOpacity>
           </View>
@@ -93,7 +94,6 @@ const styles = StyleSheet.create({
   },
   flatList: {
     marginTop: 20,
-    borderTopWidth: 1,
     borderTopColor: '#FFD8C7',
   },
   itemContainer: {

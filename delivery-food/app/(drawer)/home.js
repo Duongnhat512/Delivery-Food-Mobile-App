@@ -14,9 +14,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
-  const token = user.accessToken;
+  const token = user ? user.accessToken : null;
 
-  const link = "http://192.168.2.59:5000/api/v1";
+  const link = process.env.REACT_APP_BACKEND_URL;
 
   const fetchMenuItems = async () => {
     if (loading || !hasMore) return;
@@ -57,7 +57,7 @@ const Home = () => {
 
   const renderFooter = () => {
     if (!loading) return null;
-    return <ActivityIndicator size="large" color="#E95322" style={{backgroundColor: "#E2E1E1"}}/>
+    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#E2E1E1" }} />
   }
 
   const item = [
@@ -175,7 +175,7 @@ const Home = () => {
                     </TouchableOpacity>
                   </View>
                 </View>
-                <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginTop: 20, borderBottomWidth: 1, borderBottomColor: "#FFD8C7", marginHorizontal: 20}}>
+                <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginTop: 20, borderBottomWidth: 1, borderBottomColor: "#FFD8C7", marginHorizontal: 20 }}>
                   Đề xuất
                 </Text>
               </>

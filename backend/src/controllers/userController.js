@@ -37,9 +37,16 @@ const getUser = async(req, res) => {
 const updateAddress = async(req, res) => {
     try {
         const uid = req.user.uid;
-        const { address } = req.body;
-        await db.collection('users').doc(uid).update({ address });
-        res.status(200).send('Address updated');
+        const { newAddress } = req.body;
+
+        const userDoc = await db.collection('users').doc(uid).get();
+        const currentAddresses = userDoc.data().addresses || [];
+
+        const updatedAddresses = [...currentAddresses, ...newAddress];
+
+        await db.collection('users').doc(uid).update({ addresses: updatedAddresses });
+
+        res.status(200).send('Addresses updated');
     }
     catch (error) {
         res.status(500).send(error.message);

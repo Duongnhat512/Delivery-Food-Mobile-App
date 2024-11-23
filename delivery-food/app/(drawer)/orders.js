@@ -19,7 +19,7 @@ const Orders = () => {
   const [canceledOrders, setCanceledOrders] = useState([]);
 
   const token = user.accessToken;
-  const link = "http://192.168.2.59:5000/api/v1";
+  const link = process.env.REACT_APP_BACKEND_URL;
 
   const fetchOrders = async () => {
     if (loading || !hasMore) return;
