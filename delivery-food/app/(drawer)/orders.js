@@ -21,15 +21,13 @@ const Orders = () => {
   const token = user.accessToken;
   const link = process.env.REACT_APP_BACKEND_URL;
 
-  const fetchOrders = async () => {
+  const fetchOrdersByStatus = async (status, setOrdersState) => {
     if (loading || !hasMore) return;
 
-    setLoading(true)
-    console.log(link);
-
+    setLoading(true);
 
     try {
-      const response = await axios.get(`${link}/order_details/get_by_user_not_delivered`, {
+      const response = await axios.get(`${link}/order_details/get_by_user_and_status?status=${status}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -37,24 +35,22 @@ const Orders = () => {
           limit: 10,
           startAfter: lastDocId
         }
-      })
+      });
 
       const newOrders = response.data;
-      setOrders(prevOrders => [...prevOrders, ...newOrders]);
+      setOrdersState(prevOrders => [...prevOrders, ...newOrders]);
 
       if (newOrders.length > 0) {
         setLastDocId(newOrders[newOrders.length - 1].id);
-
       } else {
         setHasMore(false);
       }
-
     } catch (error) {
-      console.log(error)
+      console.error("Error fetching orders:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchFood = async (food_id) => {
     try {
@@ -71,11 +67,27 @@ const Orders = () => {
   }
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrdersByStatus("Chưa giao", setOrders);
   }, [])
 
   const handleSelect = (status) => {
     setSelect(status);
+    setLastDocId(null);
+    setHasMore(true);
+
+    if (status === "Đã đặt") {
+      setOrders([]);
+      fetchOrdersByStatus("Chưa giao", setOrders);
+    } else if (status === "Đang giao") {
+      setDeliveringOrders([]);
+      fetchOrdersByStatus("Đang giao", setDeliveringOrders);
+    } else if (status === "Đã giao") {
+      setDeliveredOrders([]);
+      fetchOrdersByStatus("Đã giao", setDeliveredOrders);
+    } else if (status === "Đã hủy") {
+      setCanceledOrders([]);
+      fetchOrdersByStatus("Đã hủy", setCanceledOrders);
+    }
   };
 
   const renderOrders = ({ item }) => {
@@ -118,11 +130,13 @@ const Orders = () => {
         <View style={{ width: "40%", padding: 5, gap: 5 }}>
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold" }} numberOfLines={2}>{food.name}</Text>
           <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>{created_at}</Text>
-          <TouchableOpacity
-            style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
-          >
-            <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", color: "#fff", }}>Hủy đơn</Text>
-          </TouchableOpacity>
+          {select === "Đã đặt" && (
+            <TouchableOpacity
+              style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
+            >
+              <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", color: "#fff", }}>Hủy đơn</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View style={{ alignItems: "flex-end", padding: 5 }}>
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold", color: "#E95322" }}>{food.price}đ</Text>
@@ -158,10 +172,25 @@ const Orders = () => {
         {orders.length > 0 ? (
           <>
             <FlatList
-              data={orders}
+              data={
+                select === "Đã đặt" ? orders :
+                  select === "Đang giao" ? deliveringOrders :
+                    select === "Đã giao" ? deliveredOrders :
+                      canceledOrders
+              }
               keyExtractor={(item) => item.id}
               renderItem={renderOrders}
-              onEndReached={fetchOrders}
+              onEndReached={() => {
+                if (select === "Đã đặt") {
+                  fetchOrdersByStatus("Chưa giao", setOrders);
+                } else if (select === "Đang giao") {
+                  fetchOrdersByStatus("Đang giao", setDeliveringOrders);
+                } else if (select === "Đã giao") {
+                  fetchOrdersByStatus("Đã giao", setDeliveredOrders);
+                } else if (select === "Đã hủy") {
+                  fetchOrdersByStatus("Đã hủy", setCanceledOrders);
+                }
+              }}
               onEndReachedThreshold={0.1}
               ListFooterComponent={renderFooter}
             />
