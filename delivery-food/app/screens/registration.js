@@ -2,7 +2,6 @@ import { View, StyleSheet, Text, TouchableOpacity, TextInput, Image, Pressable, 
 import CustomHeader from "../../components/customheader";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef } from "react";
-import PhoneInput from 'react-native-phone-number-input';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format } from 'date-fns';
 import IconLogin from "../../components/iconlogin";
@@ -115,22 +114,13 @@ const Registration = () => {
                     {/* Số điện thoại */}
                     <View>
                         <Text style={styles.text}>Số điện thoại</Text>
-                        <PhoneInput
-                            ref={phoneInput}
-                            defaultValue={phoneNumber}
-                            defaultCode="VN"
-                            layout="first"
-                            onChangeText={(text) => {
-                                setPhoneNumber(text);
-                            }}
-                            onChangeFormattedText={(text) => {
-                                setFormattedPhoneNumber(text);
-                            }}
-                            countryPickerProps={{ withAlphaFilter: true }}
-                            containerStyle={[styles.inputText, { padding: 0, height: 50 }]}
-                            textInputStyle={[styles.text, { paddingVertical: 0, paddingHorizontal: 8 }]}
-                            textContainerStyle={{ backgroundColor: "#F3E9B5", paddingVertical: 0, paddingHorizontal: 8 }}
-                        />
+                        <TextInput
+                                style={[styles.text, { flex: 1 }]}
+                                placeholder='Nhập số điện thoại'
+                                value={phoneNumber}
+                                onChangeText={setPhoneNumber}
+                                autoCapitalize="none"
+                            />
                     </View>
                     {/* Ngày sinh */}
                     <View>
