@@ -1,19 +1,41 @@
 import { Image, StyleSheet, Text, View } from 'react-native'
-import React, { Component, useEffect } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FoodDetails = () => {
     const router = useRouter();
     const { item } = useLocalSearchParams();
     const parsedItem = JSON.parse(item);
+    const initialPrice = parseFloat(parsedItem.price) * 1000;
+    const [quantity, setQuantity] = useState(1);
+    const [totalPrice, setTotalPrice] = useState(parsedItem.price);
+
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+    };
+
+    const handleIncreaseQuantity = () => {
+        const newQuantity = quantity + 1;
+        setQuantity(quantity + 1);
+        setTotalPrice(initialPrice * newQuantity);
+    }
+
+    const handleDecreaseQuantity = () => {
+        if (quantity > 1) {
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            setTotalPrice(initialPrice * newQuantity);
+        }
+    }
 
     useEffect(() => {
-        console.log(parsedItem.name)
-    }, [])
+        setTotalPrice(initialPrice * quantity);
+    }, [quantity]);
 
     return (
-        <View style={{ flex: 1, backgroundColor: "#F5CB58" }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#F5CB58" }}>
             <View style={styles.wrapper}>
                 <TouchableOpacity style={styles.button} onPress={() => router.back()}>
                     <Image
@@ -26,9 +48,53 @@ const FoodDetails = () => {
                 <View></View>
             </View>
             <View style={styles.bodyContent}>
+                <View style={{ gap: 30 }}>
+                    <Image
+                        source={{ uri: parsedItem.image }}
+                        style={{ width: '100%', height: 250, borderRadius: 20 }}
+                        resizeMode="cover"
+                    />
+                    <View>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", borderBottomWidth: 1, borderBottomColor: "#FFD8C7", paddingBottom: 20 }}>
+                            <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-Bold", color: "#E95322" }}>{formatPrice(totalPrice)}</Text>
+                            <View style={{ flexDirection: "row", gap: 10, alignItems: "center" }}>
+                                <TouchableOpacity
+                                    style={{ width: 30, height: 30, borderRadius: 40, backgroundColor: quantity == 1 ? "#FFEFE8" : "#E95322", alignItems: "center" }}
+                                    onPress={handleDecreaseQuantity}
+                                >
+                                    <Text style={{ fontSize: 20, color: "#fff" }}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={{ fontSize: 20, fontFamily: "LeagueSpartan-Regular" }}>{quantity}</Text>
+                                <TouchableOpacity
+                                    style={{ width: 30, height: 30, borderRadius: 40, backgroundColor: "#E95322", alignItems: "center" }}
+                                    onPress={handleIncreaseQuantity}
+                                >
+                                    <Text style={{ fontSize: 20, color: "#fff" }}>+</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                        {parsedItem.description ? (<>
+                            <Text style={{ fontSize: 20, color: "#000", fontFamily: "LeagueSpartan-SemiBold", paddingTop: 20 }}>Mô tả</Text>
+                            <Text style={{ fontSize: 16, color: "#000", fontFamily: "LeagueSpartan-Regular" }}>{parsedItem.description}</Text>
+                        </>) : (
+                            <>
+                            </>
+                        )}
 
+                    </View>
+                </View>
+                <View style={{ width: "100%", alignItems: "center" }}>
+                    <TouchableOpacity
+                        style={{ backgroundColor: "#E95322", padding: 5, borderRadius: 20, alignItems: "center", flexDirection: "row", paddingHorizontal: 20, gap: 10 }}
+                    >
+                        <Image
+                            source={require('../../assets/order-white.png')}
+                        />
+                        <Text style={{ fontSize: 14, color: "#fff" }}>Thêm vào giỏ hàng</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -37,16 +103,14 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#F5CB58',
-        justifyContent: 'space-around',
         width: '100%',
-        paddingBottom: "10%",
-        paddingTop: "10%",
+        padding: "10%",
+        gap: 20
     },
     title: {
-        fontSize: 24,
-        color: '#fff',
-        fontFamily: 'LeagueSpartan-Bold',
-        height: 40,
+        fontSize: 20,
+        color: '#000',
+        fontFamily: 'LeagueSpartan-SemiBold',
     },
     bodyContent: {
         flex: 4,
@@ -55,6 +119,8 @@ const styles = StyleSheet.create({
         borderTopStartRadius: 30,
         borderTopEndRadius: 30,
         padding: 30,
+        gap: 30,
+        justifyContent: 'space-between'
     },
 })
 
