@@ -76,6 +76,17 @@ const updateUser = async(req, res) => {
     }
 }
 
+const deleteUser = async(req, res) => {
+    try {
+        const uid = req.user.uid;
+        await db.collection('users').doc(uid).delete();
+        await admin.auth().deleteUser(uid);
+        res.status(200).send('User deleted');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 module.exports = {
-    signUp, getUser, updateAddress, updateUser
+    signUp, getUser, updateAddress, updateUser, deleteUser
 }
