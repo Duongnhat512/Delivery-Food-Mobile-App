@@ -20,7 +20,7 @@ const AddAddress = () => {
 
     try {
       const response = await axios(`${link}/users/update_address`, {
-        method: 'POST',
+        method: 'POST', 
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -79,7 +79,7 @@ const AddAddress = () => {
           <TouchableOpacity
             style={styles.addButton}
           >
-            <Text style={styles.addButtonText}>Xác nhận</Text>
+            <Text onPress={handleAddAddress} style={styles.addButtonText}>Xác nhận</Text>
           </TouchableOpacity>
         </View>
       </View>

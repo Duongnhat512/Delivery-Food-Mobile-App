@@ -53,6 +53,29 @@ const updateAddress = async(req, res) => {
     }
 }
 
+const updateUser = async(req, res) => {
+    try {
+        const uid = req.user.uid;
+        const { name, phoneNumber, birthDate, photoURL } = req.body;
+
+        const userDoc = await db.collection('users').doc(uid).get();
+        const user = userDoc.data();
+
+        const updatedUser = {
+            name: name || user.name,
+            phoneNumber: phoneNumber || user.phoneNumber,
+            birthDate: birthDate || user.birthDate,
+            photoURL: photoURL || user.photoURL
+        }
+
+        await db.collection('users').doc(uid).update(updatedUser);
+
+        res.status(200).send('User updated');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 module.exports = {
-    signUp, getUser, updateAddress
+    signUp, getUser, updateAddress, updateUser
 }
