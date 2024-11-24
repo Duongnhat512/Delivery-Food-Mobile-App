@@ -60,9 +60,9 @@ const Registration = () => {
                     photoURL: URL_AVT,
                     time_created: new Date(),
                 });
-              } catch (e) {
+            } catch (e) {
                 console.error("Error adding document: ", e);
-              }
+            }
 
             console.log('response: ', response.user);
             Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
@@ -115,12 +115,12 @@ const Registration = () => {
                     <View>
                         <Text style={styles.text}>Số điện thoại</Text>
                         <TextInput
-                                style={[styles.text, { flex: 1 }]}
-                                placeholder='Nhập số điện thoại'
-                                value={phoneNumber}
-                                onChangeText={setPhoneNumber}
-                                autoCapitalize="none"
-                            />
+                            style={[styles.inputText]}
+                            placeholder='Nhập số điện thoại'
+                            value={phoneNumber}
+                            onChangeText={setPhoneNumber}
+                            autoCapitalize="none"
+                        />
                     </View>
                     {/* Ngày sinh */}
                     <View>
