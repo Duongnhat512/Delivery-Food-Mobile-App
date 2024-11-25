@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     color: '#391713',
   },
   input: {
-    backgroundColor: '#F3E9B5', // Màu nền mới
+    backgroundColor: '#F3E9B5', 
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   inputSmall: {
-    backgroundColor: '#F3E9B5', // Màu nền mới
+    backgroundColor: '#F3E9B5', 
     padding: 10,
     borderRadius: 10,
     fontSize: 16,
