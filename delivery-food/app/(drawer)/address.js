@@ -1,71 +1,85 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView, FlatList } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
+import { UserContext } from '../contexts/userContext';
 
 const DeliveryAddress = () => {
-  const [address, setAddress] = useState("");
+  const [addresses, setAddresses] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const router = useRouter();
 
+  // Lấy token (có thể từ AsyncStorage hoặc state)
+  const { user } = useContext(UserContext);
+  const token = user ? user.accessToken : null;
+  const link = process.env.REACT_APP_BACKEND_URL;
+
+  // Hàm fetch dữ liệu người dùng
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${link}/users/get_user`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Thêm token vào header
+        }
+      });
+
+      const data = await response.json();
+      if (data && data.addresses) {
+        setAddresses(data.addresses);  // Cập nhật dữ liệu địa chỉ
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  // Fetch dữ liệu khi component mount
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => setSelectedId(item.id)}>
+    <TouchableOpacity onPress={() => setSelectedId(item.address)}>
       <View style={styles.itemContainer}>
         <Image source={require('../../assets/HomeIcon.png')} style={styles.homeIcon} />
         <View style={styles.itemTextContainer}>
           <Text style={styles.itemName}>{item.name}</Text>
           <Text style={styles.itemAddress}>{item.address}</Text>
         </View>
-        <Image source={require('../../assets/CheckPoint.png')} style={[styles.radio, selectedId === item.id && styles.selectedRadio]} />
+        <Image source={require('../../assets/CheckPoint.png')} style={[styles.radio, selectedId === item.address && styles.selectedRadio]} />
       </View>
     </TouchableOpacity>
   );
 
-  useEffect(() => {
-
-  }, [])
-
-
   return (
     <SafeAreaView style={styles.container}>
       <CustomHeader title="Địa chỉ giao hàng" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.keyboardAvoidingView}
-      >
-        <View style={styles.bodyContent}>
-          <FlatList
-            data={address}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            style={[styles.flatList, { borderTopWidth: address.length > 0 ? 1 : 0 }]}
-          />
-          <View style={styles.addButtonContainer}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={() => router.push('../screens/addAddress')}
-            >
-              <Text style={styles.addButtonText}>Thêm địa chỉ </Text>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.bodyContent}>
+        <FlatList
+          data={addresses}
+          renderItem={renderItem}
+          keyExtractor={item => item.address} 
+          style={[styles.flatList, { borderTopWidth: addresses.length > 0 ? 1 : 0 }]}
+        />
+        <View style={styles.addButtonContainer}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => router.push('../screens/addAddress')}
+          >
+            <Text style={styles.addButtonText}>Thêm địa chỉ </Text>
+          </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5CB58',
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollViewContent: {
-    flexGrow: 1,
   },
   bodyContent: {
     flex: 4,
@@ -75,7 +89,6 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     padding: 30,
   },
-
   addButtonContainer: {
     width: "100%",
     alignItems: "center",
@@ -99,11 +112,10 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'justify-between',
+    justifyContent: 'space-between',
     borderBottomColor: '#FFD8C7',
     borderBottomWidth: 1,
     paddingVertical: 25,
-
   },
   homeIcon: {
     width: 30,

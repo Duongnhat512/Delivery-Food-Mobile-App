@@ -23,7 +23,7 @@ const Home = () => {
 
     setLoading(true)
     console.log(token)
-
+    
     try {
       const response = await axios.get(`${link}/menu_items/tat_ca`, {
         headers: {
