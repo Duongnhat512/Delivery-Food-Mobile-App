@@ -57,7 +57,7 @@ const AddPaymentScreen = () => {
                 style={styles.inputSmall}
                 placeholder="MM/YY"
                 keyboardType="number-pad"
-                maxLength={5}
+                maxLength={5}a
                 value={expiryDate}
                 onChangeText={setExpiryDate}
               />
@@ -128,6 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     textAlign: 'center',
+    marginTop: 10,
   },
   saveButton: {
     backgroundColor: '#E95322',
