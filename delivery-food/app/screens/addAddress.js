@@ -1,14 +1,48 @@
 import React, { useState } from 'react'
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Alert } from 'react-native'
 import CustomHeader from '../../components/customheader'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import axios from 'axios'
+import { useContext } from 'react'
+import { UserContext } from '../contexts/userContext'
+import { useRouter } from 'expo-router'
+import { useEffect } from 'react'
+
 
 const AddAddress = () => {
   const [address, setAddress] = useState("");
   const [addressName, setAddressName] = useState("");
+  const [addresses, setAddresses] = useState([])
+  const route = useRouter()
 
+
+  const { user } = useContext(UserContext)
+  const token = user ? user.accessToken : null
   const link = process.env.REACT_APP_BACKEND_URL
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${link}/users/get_user`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token} `
+        }
+      });
+
+      const data = await response.json();
+      if (data && data.addresses) {
+        setAddresses(data.addresses);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
 
   const handleAddAddress = async () => {
     const newAddress = [
@@ -17,10 +51,21 @@ const AddAddress = () => {
         address: address
       }
     ]
+    console.log(addresses)
+    const addressExists = addresses.some(existingAddress => {
+
+      return existingAddress.address === address;
+    });
+    console.log(addressExists)
+    if (addressExists) {
+      alert('Địa chỉ đã tồn tại');
+      return;
+    } 
+
 
     try {
       const response = await axios(`${link}/users/update_address`, {
-        method: 'POST', 
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
@@ -32,6 +77,8 @@ const AddAddress = () => {
     } catch (error) {
       console.log(error)
     }
+    route.push('../(drawer)/address')
+
   }
 
   return (
