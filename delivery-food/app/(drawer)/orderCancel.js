@@ -1,14 +1,20 @@
-import { router } from 'expo-router';
-import React, { useState } from 'react'
+import { useLocalSearchParams ,router } from 'expo-router';
+
+import React, { useState,useContext,useEffect } from 'react'
 import { Text, View, StyleSheet, TouchableOpacity, Button, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
-
+import { UserContext } from '../contexts/userContext';
+import axios from 'axios';
 const OrderCancel = () => {
+  // const router = useRouter();
   const [selectedReasons, setSelectedReasons] = useState([]);
   const [otherReason, setOtherReason] = useState("");
-  const navigation = useNavigation();
+  const {  id,food_id } = useLocalSearchParams()
+  
+  const link = process.env.REACT_APP_BACKEND_URL;
+  const { user } = useContext(UserContext)
+  const token = user ? user.accessToken : null
 
   const handleToggleReason = (reason) => {
     setSelectedReasons(prevReasons =>
@@ -18,6 +24,36 @@ const OrderCancel = () => {
     );
   };
 
+  const handleConfirm = async () => {
+    if (selectedReasons.length === 0 && otherReason.trim().length === 0) {
+      alert('Vui lòng chọn hoặc nhập lý do hủy đơn');
+      return;
+    }
+
+    try {
+      const response = await axios.put(`${link}/orders/update_status/${id}/${food_id}`, {
+        status: "Đã hủy",
+        cancelReason: selectedReasons.concat(otherReason).join(', ')
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 200) {
+        alert('Hủy đơn thành công');
+        router.push('/orderCancelConfirm');
+      } else {
+        alert('Hủy đơn thất bại');
+      }
+    }
+    catch (error) {
+      console.error('Error cancelling order:', error);
+    }
+
+
+    
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -82,7 +118,9 @@ const OrderCancel = () => {
                 borderRadius: 10,
                 alignItems: "center",
                 width: "50%"
-              }}>
+              }}
+                onPress={handleConfirm}
+              >
                 <Text style={{
                   color: "white", fontWeight: "bold"
                 }}>Xác nhận</Text>

@@ -40,32 +40,39 @@ const getOrderDetailsTheoCustomerVaStatus = async (req, res) => {
 }
 
 const updateStatusOrderDetail = async (req, res) => {
-    try{
-        const order_id = req.params.order_id;
-        const item_id = req.params.item_id;
-        const status = req.body.status;
-        const orderRef = db.collection('orders').doc(order_id);
-        const order = await orderRef.get();
-        if (!order.exists) {
-            res.status(404).send('Order not found');
-            return;
-        }
-        const orderData = order.data();
-        const orderDetails = orderData.order_details;
-        const itemIndex = orderDetails.findIndex(item => item.id === item_id);
-        if (itemIndex === -1) {
-            res.status(404).send('Item not found');
-            return;
-        }
-        orderDetails[itemIndex].status = status;
-        await orderRef.update({
-            order_details: orderDetails
-        });
-        res.status(200).send('Updated');
-    }catch(error){
-        res.status(500).send(error.message);
+    try {
+      const order_id = req.params.order_id;
+      const item_id = parseInt(req.params.item_id); 
+      const status = req.body.status;
+  
+      const orderRef = db.collection('orders').doc(order_id);
+      const order = await orderRef.get();
+  
+      if (!order.exists) {
+        res.status(404).send('Order not found');
+        return;
+      }
+  
+      const orderData = order.data();
+      const orderDetails = orderData.order_details;
+      const itemIndex = orderDetails.findIndex(item => item.item_id === item_id);
+  
+      if (itemIndex === -1) {
+        res.status(404).send('Item not found');
+        return;
+      }
+  
+      orderDetails[itemIndex].status = status;
+      await orderRef.update({
+        order_details: orderDetails
+      });
+  
+      res.status(200).send('Updated');
+    } catch (error) {
+      res.status(500).send(error.message);
     }
-}
+  };
+ 
 
 module.exports = {
     updateStatusOrderDetail,
