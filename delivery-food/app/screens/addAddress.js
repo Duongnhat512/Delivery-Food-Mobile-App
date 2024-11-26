@@ -61,7 +61,7 @@ const AddAddress = () => {
 
       return existingAddress.address === address;
     });
-    console.log(addressExists)
+    
     if (addressExists) {
       alert('Địa chỉ đã tồn tại');
       return;
