@@ -75,7 +75,35 @@ const updateUser = async(req, res) => {
         res.status(500).send(error.message);
     }
 }
+const addPayment = async (req, res) => {
+    try {
+        const uid = req.user?.uid;
+        if (!uid) {
+            return res.status(400).send("User ID is required");
+        }
+
+        const { payment } = req.body;
+        if (!payment) {
+            return res.status(400).send("Payment is required");
+        }
+
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).send("User not found");
+        }
+
+        const currentPayments = userDoc.data().payments || [];
+        const updatedPayments = [...currentPayments, payment];
+
+        await db.collection('users').doc(uid).update({ payments: updatedPayments });
+
+        res.status(200).send('Payment added');
+    } catch (error) {
+        console.error("Error adding payment:", error);
+        res.status(500).send(error.message);
+    }
+};
 
 module.exports = {
-    signUp, getUser, updateAddress, updateUser
+    signUp, getUser, updateAddress, updateUser, addPayment
 }
