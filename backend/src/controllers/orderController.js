@@ -40,8 +40,9 @@ const updateStatusOrderDetail = async (req, res) => {
     try {
         const order_id = req.params.order_id;
         const item_id = parseInt(req.params.item_id);
+        
         const status = req.body.status;
-
+        const reason = req.body.reason;
         const orderRef = db.collection('orders').doc(order_id);
         const order = await orderRef.get();
 
@@ -60,6 +61,7 @@ const updateStatusOrderDetail = async (req, res) => {
         }
 
         orderDetails[itemIndex].status = status;
+        orderDetails[itemIndex].reason = reason;
 
         await orderRef.update({ order_details: orderDetails });
 

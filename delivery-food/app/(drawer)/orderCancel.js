@@ -33,7 +33,7 @@ const OrderCancel = () => {
     try {
       const response = await axios.put(`${link}/orders/update_status/${id}/${food_id}`, {
         status: "Đã hủy",
-        cancelReason: selectedReasons.concat(otherReason).join(', ')
+        reason: selectedReasons.concat(otherReason).join(', ')
       }, {
         headers: {
           'Authorization': `Bearer ${token}`
