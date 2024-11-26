@@ -3,28 +3,58 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import { useRouter } from 'expo-router';
+import { useContext ,useEffect} from 'react';
+import { UserContext } from '../contexts/userContext';
+
 
 const PaymentMethods = () => {
   const [selectedId, setSelectedId] = useState(null);
   const router = useRouter();
+  const[ paymentMethods, setPaymentMethods] = useState([])
+  const { user } = useContext(UserContext)
+  const token = user ? user.accessToken : null
+  const link = process.env.REACT_APP_BACKEND_URL
 
-  const paymentMethods = [
-    { id: '1', name: 'PayPal', icon: require('../../assets/Paypal.png') },
-    { id: '2', name: 'Apple Pay', icon: require('../../assets/Mac.png') },
-    { id: '3', name: '************34', icon: require('../../assets/card-icon.png') },
-    { id: '4', name: 'Google', icon: require('../../assets/Google-play.png') },
-  ];
+  // const paymentMethods = [
+  //   { id: '1', name: 'PayPal', icon: require('../../assets/Paypal.png') },
+  //   { id: '2', name: 'Apple Pay', icon: require('../../assets/Mac.png') },
+  //   { id: '3', name: '************34', icon: require('../../assets/card-icon.png') },
+  //   { id: '4', name: 'Google', icon: require('../../assets/Google-play.png') },
+  // ];
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${link}/users/get_user`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token} `
+        }
+      });
 
+      const data = await response.json();
+     
+      if (data && data.payments) {
+        setPaymentMethods(data.payments);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => setSelectedId(item.id)}>
+    <TouchableOpacity onPress={() => setSelectedId(item.cardNumber)}>
       <View style={styles.itemContainer}>
-        <Image source={item.icon}  />
-        <Text style={styles.itemName}>{item.name}</Text>
+        <Image source={require('../../assets/card-icon.png')} />
+        <Text style={styles.itemName}>**** **** **** {item.cardNumber.slice(-4)}</Text>
         <Image
           source={require('../../assets/CheckPoint.png')}
-          style={[styles.radio, selectedId === item.id && styles.selectedRadio]}
+          style={[styles.radio, selectedId === item.cardNumber && styles.selectedRadio]}
         />
       </View>
     </TouchableOpacity>
@@ -37,7 +67,7 @@ const PaymentMethods = () => {
         <FlatList
           data={paymentMethods}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.cardNumber}
           style={styles.paymentList}
         />
         <TouchableOpacity style={styles.paymentButton} onPress={() => router.push('../screens/addPayment')}>
