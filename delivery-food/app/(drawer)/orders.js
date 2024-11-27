@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
+import { set } from 'date-fns';
 
 const Orders = () => {
   
@@ -50,6 +51,10 @@ const Orders = () => {
       fetchOrders("Chưa giao");
     else
       fetchOrders(select);
+  }, [select]);
+ 
+  useEffect(() => {
+    
   }, []);
   const fetchFood = async (food_id) => {
     try {

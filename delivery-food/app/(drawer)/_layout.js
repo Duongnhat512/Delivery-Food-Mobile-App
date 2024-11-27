@@ -139,6 +139,7 @@ const DrawerLayout = () => {
                     headerShown: false,
                     drawerPosition: 'right',
                     drawerStyle: styles.drawer,
+                    unmountOnBlur: true,
                 }}
                 drawerContent={(props) => <CustomDrawerContent {...props} />}
             >
