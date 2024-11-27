@@ -1,8 +1,6 @@
-import { router } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react'
 import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, FlatList, } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
