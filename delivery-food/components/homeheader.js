@@ -2,8 +2,10 @@ import { Text, View, StyleSheet, TouchableOpacity, Image, TextInput } from 'reac
 import React, { Component, useState, useCallback, useEffect } from 'react'
 import { useNavigation } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native'
+import { useRouter } from 'expo-router'
 
 export default HomeHeader = () => {
+  const router = useRouter();
   const [search, setSearch] = useState('')
   const [timeOfDay, setTimeOfDay] = useState('')
   const navigation = useNavigation()
@@ -48,6 +50,7 @@ export default HomeHeader = () => {
         <View style={{ flexDirection: "row", gap: 7 }}>
           <TouchableOpacity
             style={styles.btn}
+            onPress={() => router.push('/screens/cart')}
           >
             <Image
               source={require('../assets/cart.png')}

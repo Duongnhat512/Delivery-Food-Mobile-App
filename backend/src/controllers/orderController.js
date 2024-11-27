@@ -70,8 +70,42 @@ const updateStatusOrderDetail = async (req, res) => {
         res.status(500).send(error.message);
     }
 }
+const updateQuantityAndTotalOrderDetail = async (req, res) => {
+    try {
+        const order_id = req.params.order_id;
+        const item_id = parseInt(req.params.item_id);
+        const quantity = req.body.quantity;
+        const total = req.body.total;
+        const orderRef = db.collection('orders').doc(order_id);
+        const order = await orderRef.get();
+
+        if (!order.exists) {
+            res.status(404).send('Order not found');
+            return;
+        }
+
+        const orderData = order.data();
+        const orderDetails = orderData.order_details;
+        const itemIndex = orderDetails.findIndex(item => item.item_id === item_id);
+
+        if (itemIndex === -1) {
+            res.status(404).send('Item not found');
+            return;
+        }
+
+        orderDetails[itemIndex].quantity = quantity;
+        orderDetails[itemIndex].total = total;
+
+        await orderRef.update({ order_details: orderDetails });
+
+        res.status(200).send('Order updated');
+    } catch (error) {
+        res.status(500).send(error.message);
+    }
+}
+
 
 
 module.exports = {
-    addOrder, getOrder, updateStatusOrderDetail
+    addOrder, getOrder, updateStatusOrderDetail, updateQuantityAndTotalOrderDetail
 };
