@@ -96,7 +96,16 @@ const Orders = () => {
     if (!food) {
       return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#fff" }} />
     }
-
+    const formatDate = (isoString) => {
+      const date = new Date(isoString);
+      return new Intl.DateTimeFormat('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+      }).format(date);
+  };
     return (
       <View style={{ flexDirection: "row", gap: 10, marginHorizontal: 30, paddingVertical: 15, borderBottomWidth: 1, borderColor: "#FFD8C7" }}>
         <TouchableOpacity>
@@ -108,7 +117,7 @@ const Orders = () => {
         </TouchableOpacity>
         <View style={{ width: "40%", padding: 5, gap: 5 }}>
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold" }} numberOfLines={2}>{food.name}</Text>
-          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>{created_at}</Text>
+          <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>{formatDate(created_at)}</Text>
           {select === "Đã đặt" && (
             <TouchableOpacity onPress={() => handleCancelOrder(id,food_id)}
               style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
