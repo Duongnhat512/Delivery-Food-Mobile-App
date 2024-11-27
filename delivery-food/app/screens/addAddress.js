@@ -51,12 +51,17 @@ const AddAddress = () => {
         address: address
       }
     ]
-    console.log(addresses)
+    if (addressName.trim().length === 0 || address.trim().length === 0) {
+      alert('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+
+
     const addressExists = addresses.some(existingAddress => {
 
       return existingAddress.address === address;
     });
-    console.log(addressExists)
+    
     if (addressExists) {
       alert('Địa chỉ đã tồn tại');
       return;

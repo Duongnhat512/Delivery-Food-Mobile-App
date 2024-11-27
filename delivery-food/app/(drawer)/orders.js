@@ -1,55 +1,54 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, FlatList, } from 'react-native'
+import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
 
 const Orders = () => {
-  const [select, setSelect] = useState("Đã đặt")
-  const { user } = useContext(UserContext)
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [lastDocId, setLastDocId] = useState(null);
+  
+  const [select, setSelect] = useState("Đã đặt");
   const [orders, setOrders] = useState([]);
-  const [deliveringOrders, setDeliveringOrders] = useState([]);
-  const [deliveredOrders, setDeliveredOrders] = useState([]);
-  const [canceledOrders, setCanceledOrders] = useState([]);
-
-  const token = user.accessToken;
+  const [loading, setLoading] = useState(true);
+  const { user } = useContext(UserContext);
+  const token = user ? user.accessToken : null;
   const link = process.env.REACT_APP_BACKEND_URL;
 
-  const fetchOrdersByStatus = async (status, setOrdersState) => {
-    if (loading || !hasMore) return;
+  const handleSelect = (value) => {
+    setSelect(value);
+    if (value === "Đã đặt")
+      fetchOrders("Chưa giao");
+    else
+      fetchOrders(value);
+  }
 
+  const handleCancelOrder = (id,food_id) => {
+    router.push(`/orderCancel?id=${id}&food_id=${food_id}`);
+    
+  }
+
+  const fetchOrders = async (status) => {
     setLoading(true);
-
     try {
       const response = await axios.get(`${link}/order_details/get_by_user_and_status?status=${status}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        params: {
-          limit: 10,
-          startAfter: lastDocId
+          Authorization: `Bearer ${token}`,
         }
       });
-
-      const newOrders = response.data;
-      setOrdersState(prevOrders => [...prevOrders, ...newOrders]);
-
-      if (newOrders.length > 0) {
-        setLastDocId(newOrders[newOrders.length - 1].id);
-      } else {
-        setHasMore(false);
-      }
+      setOrders(response.data); 
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      console.error("Error fetching orders:", error.response || error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
+  useEffect(() => {
+    if (select === "Đã đặt")
+      fetchOrders("Chưa giao");
+    else
+      fetchOrders(select);
+  }, []);
   const fetchFood = async (food_id) => {
     try {
       const response = await axios.get(`${link}/menu_items/?id=${food_id}`, {
@@ -63,44 +62,19 @@ const Orders = () => {
       console.log(error)
     }
   }
-
-  useEffect(() => {
-    fetchOrdersByStatus("Chưa giao", setOrders);
-  }, [])
-
-  const handleSelect = (status) => {
-    setSelect(status);
-    setLastDocId(null);
-    setHasMore(true);
-
-    if (status === "Đã đặt") {
-      setOrders([]);
-      fetchOrdersByStatus("Chưa giao", setOrders);
-    } else if (status === "Đang giao") {
-      setDeliveringOrders([]);
-      fetchOrdersByStatus("Đang giao", setDeliveringOrders);
-    } else if (status === "Đã giao") {
-      setDeliveredOrders([]);
-      fetchOrdersByStatus("Đã giao", setDeliveredOrders);
-    } else if (status === "Đã hủy") {
-      setCanceledOrders([]);
-      fetchOrdersByStatus("Đã hủy", setCanceledOrders);
-    }
-  };
-
   const renderOrders = ({ item }) => {
     return (
       <View>
         {item.order_details && item.order_details.map((detail, index) => (
           <View key={index}>
-            <FoodDetail food_id={detail.item_id} quantity={detail.quantity} created_at={item.created_at} />
+            <FoodDetail food_id={detail.item_id} quantity={detail.quantity} created_at={item.created_at} id={item.id} />
           </View>
         ))}
       </View>
     );
   }
 
-  const FoodDetail = ({ food_id, quantity, created_at }) => {
+  const FoodDetail = ({ food_id, quantity, created_at,id }) => {
     const [food, setFood] = useState(null);
 
     useEffect(() => {
@@ -129,7 +103,7 @@ const Orders = () => {
           <Text style={{ fontSize: 18, fontFamily: "LeagueSpartan-SemiBold" }} numberOfLines={2}>{food.name}</Text>
           <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", }}>{created_at}</Text>
           {select === "Đã đặt" && (
-            <TouchableOpacity
+            <TouchableOpacity onPress={() => handleCancelOrder(id,food_id)}
               style={{ backgroundColor: "#E95322", borderRadius: 20, marginTop: 5, paddingHorizontal: 10, width: 70, alignItems: "center", }}
             >
               <Text style={{ fontSize: 14, fontFamily: "LeagueSpartan-Regular", color: "#fff", }}>Hủy đơn</Text>
@@ -142,11 +116,6 @@ const Orders = () => {
         </View>
       </View>
     );
-  }
-
-  const renderFooter = () => {
-    if (!loading) return null;
-    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#fff" }} />
   }
 
   return (
@@ -167,45 +136,29 @@ const Orders = () => {
             <Text style={[styles.filterBtn, select === "Đã hủy" && styles.selectedBtn, { fontFamily: 'LeagueSpartan-Regular' }]}>Đã hủy</Text>
           </TouchableOpacity>
         </View>
-        {orders.length > 0 ? (
-          <>
-            <FlatList
-              data={
-                select === "Đã đặt" ? orders :
-                  select === "Đang giao" ? deliveringOrders :
-                    select === "Đã giao" ? deliveredOrders :
-                      canceledOrders
-              }
-              keyExtractor={(item) => item.id}
-              renderItem={renderOrders}
-              onEndReached={() => {
-                if (select === "Đã đặt") {
-                  fetchOrdersByStatus("Chưa giao", setOrders);
-                } else if (select === "Đang giao") {
-                  fetchOrdersByStatus("Đang giao", setDeliveringOrders);
-                } else if (select === "Đã giao") {
-                  fetchOrdersByStatus("Đã giao", setDeliveredOrders);
-                } else if (select === "Đã hủy") {
-                  fetchOrdersByStatus("Đã hủy", setCanceledOrders);
-                }
-              }}
-              onEndReachedThreshold={0.1}
-              ListFooterComponent={renderFooter}
-            />
-          </>
-        ) : (
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#E95322" />
+        ) : orders.length === 0 ? (
           <View style={{ flex: 1 }}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
               <Image source={require('../../assets/TransferDocument.png')} />
               <Text style={{ fontFamily: 'LeagueSpartan-Regular', fontSize: 30, textAlign: 'center', width: '70%', color: '#E95322' }}>Bạn không có đơn hàng nào</Text>
             </ScrollView>
           </View>
+        ) : (
+          <FlatList
+            data={orders}
+            renderItem={renderOrders}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
         )}
       </View>
-
     </SafeAreaView>
   )
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -217,14 +170,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderTopStartRadius: 30,
     borderTopEndRadius: 30,
-  },
-  menuItem: {
-    backgroundColor: "#F3E9B5",
-    height: 62,
-    width: 49,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
   },
   filterBtn: {
     fontSize: 14,
@@ -239,20 +184,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#E95322",
     color: "#FFEFE8",
   },
-  footer: {
-    backgroundColor: '#E95322',
-    width: '100%',
-    borderTopStartRadius: 30,
-    borderTopEndRadius: 30,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    padding: 20,
-  }
+  orderItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  orderStatus: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  orderTotal: {
+    fontSize: 14,
+    color: "#E95322",
+    marginBottom: 10,
+  },
+  orderDetail: {
+    marginTop: 10,
+    paddingLeft: 10,
+  },
+  item: {
+    fontSize: 14,
+  },
 })
 
-
 export default Orders;
-
-
-
