@@ -1,12 +1,14 @@
-import { router } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react'
 import { Text, View, StyleSheet, Image, TouchableOpacity, ScrollView, ActivityIndicator, FlatList } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import CustomHeader from '../../components/customheader';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
+<<<<<<< HEAD
 import { set } from 'date-fns';
+=======
+import { router } from 'expo-router';
+>>>>>>> 3e22bc681a234d38fe27a112153dba6d06e5fafe
 
 const Orders = () => {
   

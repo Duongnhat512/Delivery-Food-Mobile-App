@@ -8,7 +8,7 @@ import CustomHeader from '../../components/customheader';
 const OrderCancelConfirm = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <CustomHeader title="" />
+      <CustomHeader title="                                      " />
       <Image source={require('../../assets/CancelSequence.png')} style={styles.cancelSequence} />
       <Text style={styles.cancelTitle}>Đã Hủy Đơn Hàng</Text>
       <Text style={styles.cancelDescription}>Bạn đã hủy đơn hàng thành công!</Text>
