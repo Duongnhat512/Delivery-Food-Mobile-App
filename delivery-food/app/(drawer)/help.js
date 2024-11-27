@@ -1,12 +1,21 @@
-import React from 'react'
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, ScrollView } from 'react-native'
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import ChatBot from '../../components/chatBot';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Help = () => {
   return (
-    <View>
-        
-    </View>
-  )
-}
+    <SafeAreaView style={styles.container}>
+      <ChatBot />
+    </SafeAreaView>
+  );
+};
 
-export default Help;  
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+});
+
+export default Help;
