@@ -41,7 +41,6 @@ const OrderCancel = () => {
       });
 
       if (response.status === 200) {
-        alert('Hủy đơn thành công');
         router.push('/orderCancelConfirm');
       } else {
         alert('Hủy đơn thất bại');
