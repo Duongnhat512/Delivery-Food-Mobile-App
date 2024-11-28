@@ -96,16 +96,12 @@ const Orders = () => {
     if (!food) {
       return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#fff" }} />
     }
-    const formatDate = (isoString) => {
-      const date = new Date(isoString);
-      return new Intl.DateTimeFormat('vi-VN', {
-          hour: '2-digit',
-          minute: '2-digit',
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-      }).format(date);
-  };
+   
+    const formatDate = (date) => {
+      const newDate = new Date(date);
+      return newDate.toLocaleDateString() + " " + newDate.toLocaleTimeString();
+    }
+    
     return (
       <View style={{ flexDirection: "row", gap: 10, marginHorizontal: 30, paddingVertical: 15, borderBottomWidth: 1, borderColor: "#FFD8C7" }}>
         <TouchableOpacity>

@@ -7,5 +7,6 @@ router.get('/get_user', userController.getUser);
 router.post('/update_address', userController.updateAddress);
 router.put('/update_user', userController.updateUser);
 router.post('/addPayment', userController.addPayment);
+router.delete('/get_user/:id', userController.deleteAddress);
 
 module.exports = router;

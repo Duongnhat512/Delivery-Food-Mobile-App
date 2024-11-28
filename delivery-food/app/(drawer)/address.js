@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext,useCallback } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import { UserContext } from '../contexts/userContext';
+import { useFocusEffect } from '@react-navigation/native';
 
 const DeliveryAddress = () => {
   const [addresses, setAddresses] = useState([]);
@@ -39,6 +40,13 @@ const DeliveryAddress = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  // Fetch dữ liệu khi component focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => setSelectedId(item.address)}>

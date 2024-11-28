@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
 import { useRouter } from 'expo-router';
-import { or } from 'firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
 
 const CartScreen = () => {
     const [orders, setOrders] = useState([]);
@@ -69,14 +70,16 @@ const CartScreen = () => {
         setFoodPrice(priceDetails);
     };
 
-    useEffect(() => {
-        fetchOrders();
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+          fetchOrders();
+        }, [])
+      );
 
     useEffect(() => {
         if (orders.length > 0) {
             loadFoodDetails();
-            console.log(orders);
+           
         }
     }, [orders]);
 
@@ -140,7 +143,11 @@ const CartScreen = () => {
         }
     };
     const handleCheckout = () => {
-        console.log('Checkout');
+        if(orders.length === 0) {
+            alert('Giỏ hàng của bạn đang trống');
+            return;
+        }
+        router.push('./confirmOrder');
     };
     // Decrease quantity
     const decreaseQuantity = (item_id) => {
@@ -263,7 +270,7 @@ const CartScreen = () => {
                    <Text style={styles.footerText}>{total} VND</Text>
                </View>
                 <TouchableOpacity onPress={handleCheckout}>
-                    <Text style={styles.footerBtn}>Thanh toán</Text>
+                    <Text style={styles.footerBtn}>Đặt hàng</Text>
                 </TouchableOpacity>
            </View>
            
@@ -406,7 +413,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: 'white',
     },
-    
+
 });
 
 export default CartScreen;

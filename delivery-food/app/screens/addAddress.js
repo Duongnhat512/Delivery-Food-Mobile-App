@@ -82,7 +82,7 @@ const AddAddress = () => {
     } catch (error) {
       console.log(error)
     }
-    route.push('../(drawer)/address')
+    route.back()
 
   }
 

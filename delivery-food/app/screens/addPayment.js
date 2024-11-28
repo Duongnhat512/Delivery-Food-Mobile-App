@@ -107,7 +107,7 @@ const AddPaymentScreen = () => {
     } catch (error) {
       console.log(error)
     }
-    router.push('../(drawer)/payment')
+    router.back();
 
   };
 

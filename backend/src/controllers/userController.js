@@ -103,7 +103,25 @@ const addPayment = async (req, res) => {
         res.status(500).send(error.message);
     }
 };
+const deleteAddress = async (req, res) => {
+    try {
+        const uid = req.user.uid; // Lấy UID của user từ middleware xác thực
+        const { id } = req.params; // Lấy addressId từ tham số URL
 
+        const userDoc = await db.collection('users').doc(uid).get();
+        const currentAddresses = userDoc.data().addresses || [];
+
+        // Lọc bỏ địa chỉ có addressId tương ứng
+        const updatedAddresses = currentAddresses.filter(item => item.address !== id);
+
+        // Cập nhật tài liệu người dùng với danh sách địa chỉ đã lọc
+        await db.collection('users').doc(uid).update({ addresses: updatedAddresses });
+
+        res.status(200).send('Address deleted successfully');
+    } catch (error) {
+        res.status(500).send(`Error deleting address: ${error.message}`);
+    }
+};
 module.exports = {
-    signUp, getUser, updateAddress, updateUser, addPayment
+    signUp, getUser, updateAddress, updateUser, addPayment, deleteAddress
 }
