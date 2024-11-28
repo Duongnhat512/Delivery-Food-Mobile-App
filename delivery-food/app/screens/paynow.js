@@ -72,7 +72,7 @@ const PayNow = () => {
                 }
             );
             setOrderId(response.data[0]?.id);
-            setOrders(response.data[0]?.order_details || []);
+            setOrders(response.data.flatMap(order => order.order_details || []));
          
         } catch (error) {
             console.error('Error fetching orders:', error.response || error.message);

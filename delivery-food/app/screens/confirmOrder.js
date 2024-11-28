@@ -67,7 +67,7 @@ const ConfirmOrder = () => {
                     },
                 }
             );
-            setOrders(response.data[0]?.order_details || []);
+            setOrders(response.data.flatMap(order => order.order_details || []));
             setOrder(response.data[0] || {});
         } catch (error) {
             console.error('Error fetching orders:', error.response || error.message);
@@ -291,7 +291,7 @@ const ConfirmOrder = () => {
 
                 <FlatList
                     data={orders}
-                    keyExtractor={(item) => item.item_id.toString()}
+                    keyExtractor={(item) => item.item_id}
                     renderItem={renderOrderItem}
                     contentContainerStyle={styles.ordersList}
                 />

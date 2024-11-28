@@ -30,7 +30,7 @@ const CartScreen = () => {
                     },
                 }
             );
-            setOrders(response.data[0]?.order_details || []);
+            setOrders(response.data.flatMap(order => order.order_details || []));
             setOrder(response.data[0] || {});
 
         } catch (error) {

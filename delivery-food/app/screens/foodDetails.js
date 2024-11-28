@@ -3,8 +3,15 @@ import React, { Component, useEffect, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useContext } from 'react';
+import { UserContext } from '../contexts/userContext';
 
 const FoodDetails = () => {
+    const {user} = useContext(UserContext);
+    const link = process.env.REACT_APP_BACKEND_URL;
+    
+    
+    const token = user ? user.accessToken : null;
     const router = useRouter();
     const { item } = useLocalSearchParams();
     const parsedItem = JSON.parse(item);
@@ -12,6 +19,57 @@ const FoodDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(parsedItem.price);
 
+    const getEstimatedDeliveryTime = () => {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() + 25); 
+        return now.toISOString();
+    };
+    const handleAddToCart = async () => {
+
+    const orderDetails = {
+        customer_id: user.uid,
+        status: "On cart",
+        total: totalPrice,
+        total_delivery_fee: 10000, 
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        order_details: [
+            {
+                item_id: parsedItem.id,
+                quantity: quantity,
+                delivery_fee: 10000, 
+                status: "On cart",
+                estimated_delivery_time: getEstimatedDeliveryTime(),
+                total: totalPrice,
+            },
+        ],
+    };
+ 
+    try {
+        const response = await fetch(`${link}/orders/add_order`, {
+            method: "POST",
+           
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(orderDetails),
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Response status:", response.status);
+            console.error("Response body:", errorText);
+            throw new Error("Có lỗi xảy ra khi thêm vào giỏ hàng");
+        }
+
+        const data = await response.json();
+        alert("Đã thêm vào giỏ hàng thành công!");
+    } catch (error) {
+        console.error("Lỗi khi thêm vào giỏ hàng:", error);
+        alert("Không thể thêm vào giỏ hàng. Vui lòng thử lại.");
+    }
+};
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     };
@@ -84,7 +142,7 @@ const FoodDetails = () => {
                     </View>
                 </View>
                 <View style={{ width: "100%", alignItems: "center" }}>
-                    <TouchableOpacity
+                    <TouchableOpacity onPress={(handleAddToCart)}
                         style={{ backgroundColor: "#E95322", padding: 5, borderRadius: 20, alignItems: "center", flexDirection: "row", paddingHorizontal: 20, gap: 10 }}
                     >
                         <Image
