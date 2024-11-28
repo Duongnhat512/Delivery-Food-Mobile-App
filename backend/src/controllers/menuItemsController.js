@@ -112,6 +112,7 @@ const getDoUong = async (req, res) => {
 const searchMenuItems = async (req, res) => {
     const search = req.query.search || '';
     const startAfter = req.query.startAfter || '';
+    const limit = parseInt(req.query.limit) || 10;
 
     try {
         let query = db.collection('menu_items').orderBy('name');

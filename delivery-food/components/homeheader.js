@@ -35,16 +35,11 @@ export default HomeHeader = () => {
     <View style={styles.wrapper}>
       <View style={{ width: "100%", flexDirection: "row", justifyContent: "space-around" }}>
         <View style={styles.searchBar}>
-          <TextInput
-            placeholder='Tìm Kiếm'
-            value={search}
-            onChangeText={setSearch}
-            style={{ fontFamily: 'LeagueSpartan-Regular', fontSize: 16, flex: 1 }}
-          />
-          <TouchableOpacity>
-            <Image
-              source={require('../assets/filter.png')}
-            />
+          <TouchableOpacity
+            style={{ flex: 1 }}
+            onPress={() => router.push('/screens/search')}
+          >
+            <Text style={{ fontFamily: 'LeagueSpartan-Regular' }}>Tìm kiếm</Text>
           </TouchableOpacity>
         </View>
         <View style={{ flexDirection: "row", gap: 7 }}>
@@ -73,7 +68,7 @@ export default HomeHeader = () => {
           </TouchableOpacity>
         </View>
       </View>
-      <Text style={{fontFamily: "LeagueSpartan-Bold", color: "#fff", fontSize: 30, paddingHorizontal: 15}}>
+      <Text style={{ fontFamily: "LeagueSpartan-Bold", color: "#fff", fontSize: 30, paddingHorizontal: 15 }}>
         Chào {timeOfDay}
       </Text>
     </View>
