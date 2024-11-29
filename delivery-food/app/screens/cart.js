@@ -8,38 +8,50 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const CartScreen = () => {
     const [orders, setOrders] = useState([]);
-    const [order, setOrder] = useState({});
+    const [footerDetails, setFooterDetails] = useState({
+        subtotal: 0,
+        tax: 0,
+        deliveryFee: 0,
+        total: 0,
+    });
     const [loading, setLoading] = useState(true);
     const [foodImage, setFoodImage] = useState({});
     const [foodName, setFoodName] = useState({});
     const [foodPrice, setFoodPrice] = useState({});
+    const [isChoose, setIsChoose] = useState(false);
     const { user } = useContext(UserContext);
     const router = useRouter();
     const token = user ? user.accessToken : null;
     const link = process.env.REACT_APP_BACKEND_URL;
 
     // Fetch orders from backend
-    const fetchOrders = async () => {
+    const fetchCarts = async () => {
         setLoading(true);
         try {
-            const response = await axios.get(
-                `${link}/order_details/get_by_user_and_status?status=On cart`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setOrders(response.data.flatMap(order => order.order_details || []));
-            setOrder(response.data[0] || {});
-
+            const response = await axios.get(`${link}/users/get_user`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+    
+            console.log('Response data:', response.data);
+    
+            // Đảm bảo dữ liệu trả về là một đối tượng chứa `cart`
+            if (response.data && response.data.cart) {
+                // Lưu danh sách giỏ hàng
+                setOrders(response.data.cart);
+                console.log('Cart items:', response.data.cart);
+    
+            } else {
+                console.error('Unexpected response data format:', response.data);
+            }
         } catch (error) {
             console.error('Error fetching orders:', error.response || error.message);
         } finally {
             setLoading(false);
         }
     };
-
+    
     // Fetch food details by food_id
     const fetchFood = async (food_id) => {
         try {
@@ -72,10 +84,17 @@ const CartScreen = () => {
 
     useFocusEffect(
         useCallback(() => {
-          fetchOrders();
+          fetchCarts();
         }, [])
       );
-
+      useEffect(() => {
+        const fetchFooterDetails = async () => {
+            const details = await calculateFooterDetails();
+            setFooterDetails(details);
+        };
+    
+        fetchFooterDetails();
+    }, [orders]);
     useEffect(() => {
         if (orders.length > 0) {
             loadFoodDetails();
@@ -83,64 +102,77 @@ const CartScreen = () => {
         }
     }, [orders]);
 
-    // Calculate total number of items in the cart
-    const getTotalItemsInCart = () => {
-        return orders.reduce((total, item) => total + item.quantity, 0);
-    };
-    const calculateTotal = () => {
-        let subtotal = 0;
-        let deliveryFee = 0;
+    useEffect(() => {
+        fetchCarts();
+    }, [isChoose]);
 
-        // Tính subtotal và tổng phí giao hàng
-        orders.forEach(item => {
-            subtotal += item.total; // Tính tổng số tiền cho các món
-            deliveryFee += item.delivery_fee || 0;
-        });
 
-        const tax = subtotal * 0.1;
-        const total = subtotal + tax + deliveryFee;
-
-        return { subtotal, tax, deliveryFee, total };
-    };
-    const { subtotal, tax, deliveryFee, total } = calculateTotal();
-    // Update item quantity
-    const updateQuantity = async (item_id, quantity) => {
-        const item = orders.find(order => order.item_id === item_id);
-        if (item) {
-            const updatedTotal = foodPrice[item_id] * quantity;  // Tính lại tổng giá trị
-            try {
-                // Gửi PUT request tới server
-                await axios.put(
-                    `${link}/orders/update_quantity_and_total/${order.id}/${item.item_id}`,
-                    { quantity, total: updatedTotal },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
-
-                // Cập nhật danh sách đơn hàng sau khi thành công
-                const updatedOrders = orders.map((order) => {
-                    if (order.item_id === item_id) {
-                        return { ...order, quantity, total: updatedTotal };
-                    }
-                    return order;
-                });
-                setOrders(updatedOrders);
-            } catch (error) {
-                console.error('Error updating quantity:', error);
+    const handleIncreaseQuantity = async (item_id) => {
+       
+        const cartItem = {
+            item_id: item_id,
+            quantity: 1,
+        };
+        try {
+            const response = await axios.post(
+                `${link}/users/add_Cart`,
+                cartItem,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Token xác thực
+                    },
+                }
+            );
+            setIsChoose(!isChoose);
+            if (response.status === 200) {
+                console.log('Increase quantity:', response.data);
+            } else {
+                console.error('Unexpected response:', response);
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
             }
+        } catch (error) {
+            console.error('Error adding to cart:', error.response || error.message);
+            alert('Không thể thêm sản phẩm vào giỏ hàng.');
         }
     };
-    // Increase quantity
-    const increaseQuantity = (item_id) => {
-        const item = orders.find(order => order.item_id === item_id);
-        if (item) {
-            updateQuantity(item_id, item.quantity + 1);
-
-
+    const handleDecreaseQuantity = async (item) => {
+        if (item.quantity === 1) {
+            return;
         }
+       
+        const cartItem = {
+            item_id: item.item_id,
+            quantity: -1,
+        };
+        console.log('item:', item.quantity);
+        
+        
+
+        try {
+            const response = await axios.post(
+                `${link}/users/add_Cart`, // API endpoint thêm vào giỏ hàng
+                cartItem,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Token xác thực
+                    },
+                }
+            );
+            setIsChoose(!isChoose);
+            if (response.status === 200) {
+                console.log('Decrease quantity:', response.data);
+            } else {
+                console.error('Unexpected response:', response);
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error.response || error.message);
+            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+        }
+    };
+
+    const getTotalItemsInCart = () => {
+        return orders.reduce((total, order) => total + order.quantity, 0);
     };
     const handleCheckout = () => {
         if(orders.length === 0) {
@@ -149,36 +181,26 @@ const CartScreen = () => {
         }
         router.push('./confirmOrder');
     };
-    // Decrease quantity
-    const decreaseQuantity = (item_id) => {
-        const item = orders.find(order => order.item_id === item_id);
-        if (item && item.quantity > 1) {
-            updateQuantity(item_id, item.quantity - 1);
-
+    const calculateFooterDetails = async () => {
+        let subtotal = 0;
+        let deliveryFee = 20; 
+        const taxRate = 0.1; 
+    
+        for (const item of orders) {
+            const foodData = await fetchFood(item.item_id); // Lấy dữ liệu món ăn từ backend
+            const price = foodData?.price || 0; // Giá sản phẩm (nếu không có thì mặc định là 0)
+            subtotal += price * item.quantity; // Tính tổng tiền hàng (subtotal)
         }
+    
+        const tax = subtotal * taxRate; // Tính thuế
+        const total = subtotal + tax + deliveryFee; // Tổng cộng
+    
+        return { subtotal, tax, deliveryFee, total };
     };
-    const formatDate = (isoString) => {
-        const date = new Date(isoString);
-
-        // Định dạng ngày và giờ
-        const formattedDate = new Intl.DateTimeFormat('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        }).format(date);
-
-        const formattedTime = new Intl.DateTimeFormat('vi-VN', {
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(date);
-
-        return { date: formattedDate, time: formattedTime };
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
-
-    // Render order item
     const renderOrderItem = ({ item }) => {
-        const { date, time } = formatDate(item.estimated_delivery_time);
-
         return (
 
             <View style={styles.orderItem}>
@@ -189,17 +211,16 @@ const CartScreen = () => {
                 <View style={styles.orderInfo}>
                     <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: "flex-start", flex: 2 }}>
                         <Text style={styles.productName}>{foodName[item.item_id]}</Text>
-                        <Text style={styles.productPrice}>{item.total} VND</Text>
+                        <Text style={styles.productPrice}>{formatCurrency(foodPrice[item.item_id]*item.quantity*1000)}</Text>
                     </View>
                     <View style={{ flexDirection: 'column', justifyContent: 'space-between', alignItems: "flex-end", flex: 1 }}>
-                        <Text style={styles.estimated_delivery_date_time}>{date}</Text>
-                        <Text style={styles.estimated_delivery_date_time}>{time}</Text>
+             
                         <View style={styles.quantityContainer}>
-                            <TouchableOpacity onPress={() => decreaseQuantity(item.item_id)} >
+                            <TouchableOpacity onPress={() => handleDecreaseQuantity(item)}>
                                 <Image source={require('../../assets/LessIcon.png')} style={styles.quantityButton} />
                             </TouchableOpacity>
                             <Text style={styles.productQuantity}>{item.quantity}</Text>
-                            <TouchableOpacity onPress={() => increaseQuantity(item.item_id)} >
+                            <TouchableOpacity  onPress={() => handleIncreaseQuantity(item.item_id)}>
                                 <Image source={require('../../assets/AddIcon.png')} style={styles.quantityButton} />
                             </TouchableOpacity>
                         </View>
@@ -255,23 +276,23 @@ const CartScreen = () => {
                <View style={styles.footerItem}>
                <View style={styles.footerRow}>
                    <Text style={styles.footerText}>Tạm tính:</Text>
-                   <Text style={styles.footerText}>{subtotal} VND</Text>
+                   <Text style={styles.footerText}>{formatCurrency(footerDetails.subtotal*1000)}</Text>
                </View>
                <View style={styles.footerRow}>
                    <Text style={styles.footerText}>Thuế và Phí:</Text>
-                   <Text style={styles.footerText}>{tax} VND</Text>
+                   <Text style={styles.footerText}>{formatCurrency(footerDetails.tax*1000)}</Text>
                </View>
                <View style={styles.footerRow}>
                    <Text style={styles.footerText}>Phí giao hàng:</Text>
-                   <Text style={styles.footerText}>{deliveryFee} VND</Text>
+                   <Text style={styles.footerText}>{formatCurrency(footerDetails.deliveryFee*1000)}</Text>
                </View>
                <View style={styles.footerRow}>
                    <Text style={styles.footerText}>Tổng cộng:</Text>
-                   <Text style={styles.footerText}>{total} VND</Text>
+                   <Text style={styles.footerText}>{formatCurrency(footerDetails.total*1000)}</Text>
                </View>
-                <TouchableOpacity onPress={handleCheckout}>
-                    <Text style={styles.footerBtn}>Đặt hàng</Text>
-                </TouchableOpacity>
+               <TouchableOpacity onPress={handleCheckout}>
+                   <Text style={styles.footerBtn}>Đặt hàng</Text>
+               </TouchableOpacity>
            </View>
            
             )}

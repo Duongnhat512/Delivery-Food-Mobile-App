@@ -122,6 +122,99 @@ const deleteAddress = async (req, res) => {
         res.status(500).send(`Error deleting address: ${error.message}`);
     }
 };
+
+const addCart = async (req, res) => {
+    try {
+        const uid = req.user?.uid;
+        if (!uid) {
+            return res.status(400).send("User ID is required");
+        }
+
+        const { item_id, quantity } = req.body;
+        if (!item_id || !quantity) {
+            return res.status(400).send("Item data is required");
+        }
+
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).send("User not found");
+        }
+
+        const currentCart = userDoc.data().cart || [];
+        const existingItemIndex = currentCart.findIndex(cartItem => cartItem.item_id === item_id);
+
+        if (existingItemIndex !== -1) {
+            // Nếu sản phẩm đã có trong giỏ hàng, cộng thêm số lượng
+            currentCart[existingItemIndex].quantity += quantity;
+        } else {
+            // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
+            currentCart.push({ item_id, quantity });
+        }
+
+        await db.collection('users').doc(uid).update({ cart: currentCart });
+
+        res.status(200).send('Item added to cart');
+    } catch (error) {
+        console.error("Error adding item to cart:", error);
+        res.status(500).send(error.message);
+    }
+
+   
+
+
+  
+};
+
+const clearCart = async (req, res) => {
+    try {
+        const uid = req.user?.uid;
+        if (!uid) {
+            return res.status(400).send("User ID is required");
+        }
+
+        await db.collection('users').doc(uid).update({ cart: [] });
+
+        res.status(200).send('Cart cleared');
+    } catch (error) {
+        console.error("Error clearing cart:", error);
+        res.status(500).send(error.message);
+    }
+};
+
+const deleteCartItem = async (req, res) => {
+    try {
+        const uid = req.user?.uid;
+        const item_id = req.params.item_id;
+
+        if (!uid) {
+            return res.status(400).send("User ID is required");
+        }
+
+        if (!item_id) {
+            return res.status(400).send("Item ID is required");
+        }
+
+        const userDoc = await db.collection('users').doc(uid).get();
+        const userData = userDoc.data();
+
+        if (!userData || !userData.cart) {
+            return res.status(404).send("Cart not found");
+        }
+
+        const updatedCart = userData.cart.filter(item => item.item_id !== parseInt(item_id));
+
+        await db.collection('users').doc(uid).update({ cart: updatedCart });
+
+        res.status(200).send('Item removed from cart');
+    } catch (error) {
+        console.error("Error deleting cart item:", error);
+        res.status(500).send(error.message);
+    }
+};
+
+
+
+
 module.exports = {
-    signUp, getUser, updateAddress, updateUser, addPayment, deleteAddress
+    signUp, getUser, updateAddress, updateUser, addPayment, deleteAddress, addCart, clearCart, deleteCartItem
 }

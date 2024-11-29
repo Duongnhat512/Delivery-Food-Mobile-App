@@ -7,18 +7,14 @@ import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
-
 const PayNow = () => {
     const [orders, setOrders] = useState([]);
-  
     const [orderId, setOrderId] = useState(null);
     const [loading, setLoading] = useState(true);
-   
     const [foodName, setFoodName] = useState({});
-    
+    const [priceDetails, setPriceDetails] = useState({});
     const { user } = useContext(UserContext);
     const { address } = useLocalSearchParams();
-
     const [payments, setPayments] = useState([]);
     const [selectedPayment, setSelectedPayment] = useState(null);
     const router = useRouter();
@@ -26,12 +22,13 @@ const PayNow = () => {
     const link = process.env.REACT_APP_BACKEND_URL;
 
     const fetchUserData = async () => {
+        setLoading(true);
         try {
             const response = await fetch(`${link}/users/get_user`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` // Thêm token vào header
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -39,51 +36,28 @@ const PayNow = () => {
             if (data && data.payments) {
                 setPayments(data.payments);
             }
-          
+            if (data && data.cart){
+                setOrders(data.cart);
+            }
+
         } catch (error) {
             console.error('Error fetching user data:', error);
-        }
-    };
-
-    // Fetch dữ liệu khi component mount
-    useEffect(() => {
-        fetchUserData();
-
-    }, []);
-
-    useFocusEffect(
-        useCallback(() => {
-            fetchUserData();
-
-
-        }, [])
-    );
-
-    // Fetch orders from backend
-    const fetchOrders = async () => {
-        setLoading(true);
-        try {
-            const response = await axios.get(
-                `${link}/order_details/get_by_user_and_status?status=On cart`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            setOrderId(response.data[0]?.id);
-            setOrders(response.data.flatMap(order => order.order_details || []));
-         
-        } catch (error) {
-            console.error('Error fetching orders:', error.response || error.message);
         } finally {
             setLoading(false);
         }
     };
 
-    // Fetch food details by food_id
-    const fetchFood = async (food_id) => {
+    useEffect(() => {
+        fetchUserData();
+    }, []);
 
+    useFocusEffect(
+        useCallback(() => {
+            fetchUserData();
+        }, [])
+    );
+
+    const fetchFood = async (food_id) => {
         try {
             const response = await axios.get(`${link}/menu_items/?id=${food_id}`, {
                 headers: {
@@ -95,15 +69,14 @@ const PayNow = () => {
             console.error('Error fetching food details:', error);
         }
     };
+
     useEffect(() => {
         if (orders.length > 0) {
             loadFoodDetails();
-
         }
     }, [orders]);
-    // Load food images for each item
+
     const loadFoodDetails = async () => {
-       
         const nameDetails = {};
         const priceDetails = {};
         for (const item of orders) {
@@ -111,56 +84,65 @@ const PayNow = () => {
             nameDetails[item.item_id] = foodData?.name || null;
             priceDetails[item.item_id] = foodData?.price || null;
         }
-        
         setFoodName(nameDetails);
+        setPriceDetails(priceDetails);
     };
-
-    useEffect(() => {
-        fetchOrders();
-    }, []);
-
-
 
     const calculateTotal = () => {
         let subtotal = 0;
-        let deliveryFee = 0;
-
-        orders.forEach(item => {
-            subtotal += item.total;
-            deliveryFee += item.delivery_fee || 0;
-        });
-
-        const tax = subtotal * 0.1;
-        const total = subtotal + tax + deliveryFee;
-
-        return { subtotal, tax, deliveryFee, total };
+        let total = 0;
+        for (const order of orders) {
+            subtotal += order.quantity * priceDetails[order.item_id];
+        }
+        total = subtotal;
+        return { subtotal, total };
     };
-    const {  total } = calculateTotal();
 
-    
-    const updateOrderStatus = async (itemId) => {
+    const { total } = calculateTotal();
+
+    const addOrder = async (orderData) => {
+       
+    };
+
+ 
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+    const updateOrderStatus = async (item_id) => {
         try {
-            const response = await axios.put(`${link}/orders/update_only_status/${orderId}/${itemId}`, {
-                status: "Chưa giao",
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            const response = await axios.put(
+                `${link}/orders/update_status`,
+                { item_id, status: 'Confirmed' },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
                 }
-            });
-    
-            if (response.status === 200) {
-                return true;
-            } else {
-                alert('Thanh toán thất bại');
-                return false;
-            }
+            );
+            return response.status === 200;
         } catch (error) {
-            console.error('Error cancelling order:', error);
+            console.error('Error updating order status:', error);
             return false;
         }
     };
 
-   
+    const clearCart = async () => {
+        try {
+            const response = await axios.delete(`${link}/users/clear_cart`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.status === 200;
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            return false;
+        }
+    };
+
 
     const handleConfirmOrder = async () => {
         if (!selectedPayment) {
@@ -168,28 +150,59 @@ const PayNow = () => {
             return;
         }
     
-        const updatePromises = orders.map(order => updateOrderStatus( order.item_id));
-        const results = await Promise.all(updatePromises);
+        const newOrder = {
+            customer_id: user.uid,
+            status: "Pending",
+            total: total,
+            created_at: new Date().toISOString(),
+            updated_at: Date.now(),
+            total_delivery_fee: 10000,
+            order_details: orders.map(order => ({
+                item_id: order.item_id,
+                quantity: order.quantity,
+                delivery_fee: 10000,
+                status: "Chưa giao",
+                estimated_delivery_time: new Date(new Date().getTime() + 25 * 60 * 1000).toISOString(),
+                total: priceDetails[order.item_id] * order.quantity * 1000,
+            })),
+        };
     
-        if (results.every(result => result)) {
-            router.push('/orders');
-        } else {
-            alert('Some orders failed to update');
+        try {
+            const response = await axios.post(
+                `${link}/orders/add_order`,
+                newOrder,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
+    
+            if (response.status === 201) {
+                alert('Đơn hàng đã được thêm thành công!');
+                await clearCart();
+                fetchUserData();
+                router.push('/orders');
+            } else {
+                alert('Thêm đơn hàng thất bại');
+            }
+        } catch (error) {
+            console.error('Error adding order:', error);
+            alert('Lỗi khi thêm đơn hàng');
         }
     };
-    const renderOrderItem = ({ item }) => {
-        
 
+    const renderOrderItem = ({ item }) => {
         return (
             <View style={styles.containerOrder}>
-
                 <View style={styles.orderItem}>
                     <View style={styles.orderInfo}>
                         <Text style={styles.productName}>{foodName[item.item_id]}</Text>
                         <Text style={styles.productQuantityText}>{item.quantity} sản phẩm</Text>
                     </View>
                     <View style={styles.subtotal}>
-                        <Text  style={{fontWeight: 'bold', fontSize: 16}}>{total} VND</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}> {formatCurrency(priceDetails[item.item_id] * item.quantity * 1000)}</Text>
                     </View>
                 </View>
             </View>
@@ -199,7 +212,7 @@ const PayNow = () => {
     const renderPaymentItem = ({ item }) => {
         const formattedCardNumber = `**** **** **** ${item.cardNumber.slice(-4)}`;
         const isSelected = selectedPayment === item;
-    
+
         return (
             <TouchableOpacity onPress={() => setSelectedPayment(item)}>
                 <View style={[styles.containerPayment, isSelected && styles.selectedContainer]}>
@@ -222,7 +235,6 @@ const PayNow = () => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center" }}>
                         <Text style={styles.addressContainer}> Địa chỉ giao hàng:</Text>
                     </View>
-
                     <Text style={styles.selectedText}>{address}</Text>
                 </View>
                 <View style={styles.ordersListContainer}>
@@ -249,24 +261,17 @@ const PayNow = () => {
                     />
                 </View>
                 <View style={styles.timeDelivery}>
-
                     <Text style={styles.textTitle}>Thời gian giao hàng:</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: "center" }}>
-                        <Text >Dự kiến giao hàng:</Text>
-                        <Text  style={{fontWeight: 'bold', fontSize: 16}}
-                        >25 phút</Text>
-        
-
+                        <Text>Dự kiến giao hàng:</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>25 phút</Text>
                     </View>
                 </View>
-                
                 <View style={styles.footerItem}>
-                    
                     <TouchableOpacity onPress={handleConfirmOrder}>
                         <Text style={styles.footerBtn}>Đặt hàng ngay</Text>
                     </TouchableOpacity>
                 </View>
-
             </View>
         </SafeAreaView>
     );
@@ -292,7 +297,6 @@ const styles = StyleSheet.create({
     },
     ordersList: {
         paddingBottom: 20,
-       
     },
     ordersListContainer: {
         flex: 1,
@@ -325,7 +329,7 @@ const styles = StyleSheet.create({
         width: '60%',
     },
     productName: {
-        flex:3,
+        flex: 3,
         fontWeight: 'bold',
         fontSize: 15,
         color: '#2D2D2D',
@@ -336,7 +340,7 @@ const styles = StyleSheet.create({
     },
     productQuantityText: {
         textAlign: 'right',
-        flex:2,
+        flex: 2,
         fontSize: 12,
         color: '#2D2D2D',
     },
@@ -357,14 +361,12 @@ const styles = StyleSheet.create({
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-
     },
     quantityButton: {
         width: 25,
         height: 25,
         margin: 5,
     },
-
     contentIfEmpty: {
         flex: 1,
         justifyContent: 'center',
@@ -416,7 +418,7 @@ const styles = StyleSheet.create({
         padding: 5,
         borderRadius: 10,
         marginTop: 5,
-        marginBottom: 5
+        marginBottom: 5,
     },
     subtotal: {
         flex: 1,
@@ -429,8 +431,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center',
-        
-    
     },
     paymentItem: {
         flexDirection: 'row',
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: 'bold',
         color: '#333',
-        
     },
 });
+
 export default PayNow;

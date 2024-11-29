@@ -5,6 +5,7 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/userContext';
+import axios from 'axios';
 
 const FoodDetails = () => {
     const {user} = useContext(UserContext);
@@ -25,50 +26,37 @@ const FoodDetails = () => {
         return now.toISOString();
     };
     const handleAddToCart = async () => {
-
-    const orderDetails = {
-        customer_id: user.uid,
-        status: "On cart",
-        total: totalPrice,
-        total_delivery_fee: 10000, 
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        order_details: [
-            {
-                item_id: parsedItem.id,
-                quantity: quantity,
-                delivery_fee: 10000, 
-                status: "On cart",
-                estimated_delivery_time: getEstimatedDeliveryTime(),
-                total: totalPrice,
-            },
-        ],
-    };
- 
-    try {
-        const response = await fetch(`${link}/orders/add_order`, {
-            method: "POST",
-           
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-            },
-            body: JSON.stringify(orderDetails),
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Response status:", response.status);
-            console.error("Response body:", errorText);
-            throw new Error("Có lỗi xảy ra khi thêm vào giỏ hàng");
+        const cartItem = {
+            item_id: parsedItem.id,
+            quantity: quantity,
+        };
+        try {
+            const response = await axios.post(
+                `${process.env.REACT_APP_BACKEND_URL}/users/add_Cart`, // API endpoint thêm vào giỏ hàng
+                cartItem,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Token xác thực
+                    },
+                }
+            );
+    
+            if (response.status === 200) {
+                alert('Đã thêm sản phẩm vào giỏ hàng!');
+            } else {
+                console.error('Unexpected response:', response);
+                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error.response || error.message);
+            alert('Không thể thêm sản phẩm vào giỏ hàng.');
         }
+       
 
-        const data = await response.json();
-        alert("Đã thêm vào giỏ hàng thành công!");
-    } catch (error) {
-        console.error("Lỗi khi thêm vào giỏ hàng:", error);
-        alert("Không thể thêm vào giỏ hàng. Vui lòng thử lại.");
-    }
+
+        
+
+
 };
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);

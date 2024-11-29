@@ -8,5 +8,8 @@ router.post('/update_address', userController.updateAddress);
 router.put('/update_user', userController.updateUser);
 router.post('/addPayment', userController.addPayment);
 router.delete('/get_user/:id', userController.deleteAddress);
+router.post('/add_cart', userController.addCart);
+router.delete('/clear_cart', userController.clearCart);
+router.delete('/delete_cart_item/:item_id', userController.deleteCartItem);
 
 module.exports = router;
