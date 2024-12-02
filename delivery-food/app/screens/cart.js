@@ -23,8 +23,6 @@ const CartScreen = () => {
     const router = useRouter();
     const token = user ? user.accessToken : null;
     const link = process.env.REACT_APP_BACKEND_URL;
-
-    // Fetch orders from backend
     const fetchCarts = async () => {
         setLoading(true);
         try {
@@ -33,15 +31,8 @@ const CartScreen = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
-            console.log('Response data:', response.data);
-    
-            // Đảm bảo dữ liệu trả về là một đối tượng chứa `cart`
             if (response.data && response.data.cart) {
-                // Lưu danh sách giỏ hàng
                 setOrders(response.data.cart);
-                console.log('Cart items:', response.data.cart);
-    
             } else {
                 console.error('Unexpected response data format:', response.data);
             }
@@ -51,8 +42,6 @@ const CartScreen = () => {
             setLoading(false);
         }
     };
-    
-    // Fetch food details by food_id
     const fetchFood = async (food_id) => {
         try {
             const response = await axios.get(`${link}/menu_items/?id=${food_id}`, {
@@ -65,8 +54,6 @@ const CartScreen = () => {
             console.error('Error fetching food details:', error);
         }
     };
-
-    // Load food images for each item
     const loadFoodDetails = async () => {
         const imageDetails = {};
         const nameDetails = {};
@@ -108,7 +95,6 @@ const CartScreen = () => {
 
 
     const handleIncreaseQuantity = async (item_id) => {
-       
         const cartItem = {
             item_id: item_id,
             quantity: 1,
@@ -119,7 +105,7 @@ const CartScreen = () => {
                 cartItem,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Token xác thực
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -144,7 +130,7 @@ const CartScreen = () => {
             item_id: item.item_id,
             quantity: -1,
         };
-        console.log('item:', item.quantity);
+      
         
         
 

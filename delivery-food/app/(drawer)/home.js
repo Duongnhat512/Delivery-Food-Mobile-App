@@ -14,18 +14,21 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const { user } = useContext(UserContext);
+  const [category, setCategory] = useState("tat_ca");
   const token = user ? user.accessToken : null;
 
   const link = process.env.REACT_APP_BACKEND_URL;
 
   const fetchMenuItems = async () => {
+    
+    setMenuItems([])
     if (loading || !hasMore) return;
 
     setLoading(true)
     console.log(token)
     
     try {
-      const response = await axios.get(`${link}/menu_items/tat_ca`, {
+      const response = await axios.get(`${link}/menu_items/${category}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         },
@@ -34,15 +37,19 @@ const Home = () => {
           startAfter: lastDocId
         }
       });
-
-      const newMenuItems = response.data;
-      setMenuItems(prevMenuItems => [...prevMenuItems, ...newMenuItems]);
-
-      if (newMenuItems.length > 0) {
-        setLastDocId(newMenuItems[newMenuItems.length - 1].id);
-      } else {
-        setHasMore(false);
+      console.log(category)
+      const newMenuItems = response.data
+    
+      setMenuItems(prevItems => [...prevItems, ...newMenuItems])
+      
+      if (newMenuItems.length < 10) {
+        setHasMore(false)
       }
+      // else {
+      //   setLastDocId(newMenuItems[newMenuItems.length - 1].id)
+      // }
+  
+
 
     } catch (error) {
       console.log(error)
@@ -51,9 +58,12 @@ const Home = () => {
     }
   }
 
+
+
+
   useEffect(() => {
     fetchMenuItems();
-  }, [])
+  }, [category])
 
   const renderFooter = () => {
     if (!loading) return null;
@@ -88,8 +98,34 @@ const Home = () => {
     }
   ]
 
+
+  const changeData = async (name) => {
+    
+    if (name === "Đồ uống") {
+      setCategory("do_uong")
+  
+    }
+    if (name === "Ăn chính") {
+      setCategory("an_chinh")
+     
+    }
+    if (name === "Ăn vặt") {
+      setCategory("an_vat")
+
+    }
+    if (name === "Tráng miệng") {
+      setCategory("trang_mieng")
+    }
+    // if (name === "Ăn chay") {
+    //   setCategory("an_chay")
+    // }
+  
+  }
+ 
+
   const renderItem = ({ item }) => {
     return (
+      <TouchableOpacity onPress={() => changeData(item.name)}>
       <View style={{ gap: 5, alignItems: "center", width: 50 }}>
         <View style={styles.menuItem}>
           <Image source={item.img} />
@@ -99,6 +135,7 @@ const Home = () => {
           ellipsizeMode='tail'
         >{item.name}</Text>
       </View>
+      </TouchableOpacity>
     )
   }
 
@@ -154,7 +191,7 @@ const Home = () => {
             data={menuItems}
             keyExtractor={item => item.id}
             renderItem={renderFood}
-            onEndReached={fetchMenuItems}
+            // onEndReached={fetchMenuItems}
             onEndReachedThreshold={1}
             ListFooterComponent={renderFooter}
             ListHeaderComponent={

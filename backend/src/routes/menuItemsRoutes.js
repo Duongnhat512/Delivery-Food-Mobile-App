@@ -8,5 +8,6 @@ router.get('/an_chinh', menuController.getAnChinh);
 router.get('/do_uong', menuController.getDoUong);
 router.get('/search', menuController.searchMenuItems);
 router.get('/', menuController.getMenuItemById);
-
+router.get('/trang_mieng', menuController.getTrangMieng);
+router.get('/an_chay', menuController.getAnChay);
 module.exports = router;

@@ -192,7 +192,7 @@ const ConfirmOrder = () => {
             item_id: item.item_id,
             quantity: -1,
         };
-        console.log('item:', item.quantity);
+   
         
         
 

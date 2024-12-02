@@ -20,11 +20,7 @@ const FoodDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(parsedItem.price);
 
-    const getEstimatedDeliveryTime = () => {
-        const now = new Date();
-        now.setMinutes(now.getMinutes() + 25); 
-        return now.toISOString();
-    };
+  
     const handleAddToCart = async () => {
         const cartItem = {
             item_id: parsedItem.id,
