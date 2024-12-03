@@ -10,6 +10,7 @@ import { FIREBASE_AUTH, FIREBASE_DB } from "../../FirebaseConfig";
 import { router } from "expo-router";
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import axios from "axios";
+import Toast from "react-native-toast-message";
 
 
 
@@ -37,12 +38,51 @@ const Registration = () => {
     const [date, setDate] = useState(new Date());
     const [open, setOpen] = useState(false);
 
+    const validate = () => {
+        if (!name) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập tên của bạn',
+            });
+            return false;
+        }
+        if (!email) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập email của bạn',
+            });
+            return false;
+        }
+        if (!password) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập mật khẩu của bạn',
+            });
+            return false;
+        }
+        if (!phoneNumber) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: 'Vui lòng nhập số điện thoại của bạn',
+            });
+            return false;
+        }
+        return true;
+    }
+
     // xử lý đăng ký
     const handleSignUp = async () => {
+        if (!validate()) {
+            return;
+        }
+
         setLoading(true);
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
-
             const user = response.user;
 
             await updateProfile(user, {
@@ -51,7 +91,7 @@ const Registration = () => {
             });
 
             try {
-                const docRef = await setDoc(doc(db, "users", user.uid), {
+                await setDoc(doc(db, "users", user.uid), {
                     uid: user.uid,
                     name: name,
                     email: email,
@@ -64,17 +104,32 @@ const Registration = () => {
                 console.error("Error adding document: ", e);
             }
 
-            console.log('response: ', response.user);
-            Alert.alert('Đăng ký thành công', 'Chúc mừng bạn đã đăng ký thành công tài khoản.');
+            Toast.show({
+                type: 'success',
+                text1: 'Đăng ký thành công',
+                text2: 'Chúc mừng bạn đã đăng ký thành công tài khoản.',
+            });
 
         } catch (error) {
-            setError(error.message);
-            Alert.alert('Đăng ký thất bại', error.message);
+            let errorMessage = 'Đã xảy ra lỗi';
+            if (error.code === 'auth/email-already-in-use') {
+                errorMessage = 'Email đã được sử dụng';
+            } else if (error.code === 'auth/invalid-email') {
+                errorMessage = 'Email không hợp lệ';
+            } else if (error.code === 'auth/weak-password') {
+                errorMessage = 'Mật khẩu quá yếu';
+            }else if (error.code === 'auth/missing-password') {
+                errorMessage = 'Vui lòng nhập mật khẩu';
+            }
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: errorMessage,
+            });
         } finally {
             setLoading(false);
         }
-
-    }
+    };
 
     return (
         <SafeAreaView style={styles.container} >
@@ -109,7 +164,14 @@ const Registration = () => {
                     {/* Email */}
                     <View>
                         <Text style={styles.text}>Email</Text>
-                        <TextInput style={styles.inputText} value={email} autoCapitalize="none" onChangeText={setEmail} placeholder="example@example.com" />
+                        <TextInput
+                            style={styles.inputText}
+                            value={email}
+                            autoCapitalize="none"
+                            onChangeText={setEmail}
+                            placeholder="example@example.com"
+                            keyboardType="email-address"
+                        />
                     </View>
                     {/* Số điện thoại */}
                     <View>
@@ -120,6 +182,7 @@ const Registration = () => {
                             value={phoneNumber}
                             onChangeText={setPhoneNumber}
                             autoCapitalize="none"
+                            keyboardType="phone-pad"
                         />
                     </View>
                     {/* Ngày sinh */}

@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from 'expo-splash-screen';
 import { UserContext, UserProvider, useUser } from "./contexts/userContext";
+import Toast from "react-native-toast-message";
 
 const RootLayout = () => {
     const user = useUser();
@@ -55,7 +56,7 @@ const RootLayout = () => {
                     />
                 </Stack>
             )}
-
+            <Toast refs={(ref) => Toast.setRef(ref)} />
         </UserProvider>
     )
 }

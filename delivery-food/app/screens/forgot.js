@@ -60,7 +60,6 @@ const Forgot = () => {
                 </View>
                 <Text style={{ fontSize: 14, fontFamily: 'LeagueSpartan-Regular' }}>Nếu không nhận được email, hãy kiểm tra thư rác hoặc thư spam để lấy được link.</Text>
             </View>
-            <Toast refs={(ref) => Toast.setRef(ref)} />
         </SafeAreaView>
     );
 };

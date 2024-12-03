@@ -8,6 +8,7 @@ import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { UserContext } from '../contexts/userContext';
 import { set } from 'date-fns';
+import Toast from 'react-native-toast-message';
 
 
 const Login = () => {
@@ -31,6 +32,11 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       if (response) {
         setUser(response.user);
+        Toast.show({
+          type: 'success',
+          text1: 'Đăng nhập thành công',
+          text2: 'Chào mừng bạn quay trở lại!',
+        })
         router.push('../(drawer)/home');
       }
     } catch (error) {
