@@ -54,6 +54,7 @@
     "react-native-screens": "^3.31.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-swiper": "^1.6.0",
+    "react-native-toast-message": "^2.2.1",
     "react-native-ui-datepicker": "^2.0.4",
     "react-native-web": "~0.19.10",
     "react-native-xml2js": "^1.0.3",

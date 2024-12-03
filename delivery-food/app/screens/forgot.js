@@ -1,21 +1,37 @@
 import React, { useState } from 'react';
 import { TextInput, Button, Text, StyleSheet, Alert, View } from 'react-native';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '../../FirebaseConfig';
+import { FIREBASE_AUTH } from '../../FirebaseConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import { TouchableOpacity } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const Forgot = () => {
     const [email, setEmail] = useState('');
-    const [message, setMessage] = useState('');
+
+    const auth = FIREBASE_AUTH;
 
     const handlePasswordReset = async () => {
         try {
             await sendPasswordResetEmail(auth, email);
-            setMessage('Password reset email sent!');
+            Toast.show({
+                type: 'success',
+                text1: 'Thành công',
+                text2: 'Hãy kiểm tra email của bạn!',
+            });
         } catch (error) {
-            Alert.alert('Error', error.message);
+            let errorMessage = 'Đã xảy ra lỗi';
+            if (error.code === 'auth/invalid-email') {
+                errorMessage = 'Email không hợp lệ';
+            } else if (error.code === 'auth/user-not-found') {
+                errorMessage = 'Email không tồn tại';
+            }
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi',
+                text2: errorMessage,
+            });
         }
     };
 
@@ -24,7 +40,7 @@ const Forgot = () => {
             <CustomHeader title="Quên mật khẩu" />
             <View style={styles.bodyContent}>
                 <Text
-                    style={{fontSize: 16, fontFamily: 'LeagueSpartan-Bold'}}
+                    style={{ fontSize: 16, fontFamily: 'LeagueSpartan-Bold' }}
                 >Bạn quên mật khẩu?</Text>
                 <TextInput
                     style={styles.inputText}
@@ -42,9 +58,9 @@ const Forgot = () => {
                         <Text style={styles.text}>Xác nhận</Text>
                     </TouchableOpacity>
                 </View>
-                <Text style={{fontSize: 14, fontFamily: 'LeagueSpartan-Regular'}}>Nếu không nhận được email, hãy kiểm tra thư rác hoặc thư spam để lấy được link.</Text>
-                {message ? <Text style={styles.message}>{message}</Text> : null}
+                <Text style={{ fontSize: 14, fontFamily: 'LeagueSpartan-Regular' }}>Nếu không nhận được email, hãy kiểm tra thư rác hoặc thư spam để lấy được link.</Text>
             </View>
+            <Toast refs={(ref) => Toast.setRef(ref)} />
         </SafeAreaView>
     );
 };

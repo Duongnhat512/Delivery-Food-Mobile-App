@@ -31,6 +31,8 @@ const Orders = () => {
   }
 
   const fetchOrders = async (status) => {
+    console.log(link);
+    
     setLoading(true);
     try {
       const response = await axios.get(`${link}/order_details/get_by_user_and_status?status=${status}`, {

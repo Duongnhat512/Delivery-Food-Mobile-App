@@ -55,7 +55,7 @@ const Registration = () => {
                     uid: user.uid,
                     name: name,
                     email: email,
-                    phoneNumber: formattedPhoneNumber,
+                    phoneNumber: phoneNumber,
                     birthDate: format(date, 'dd/MM/yyyy'),
                     photoURL: URL_AVT,
                     time_created: new Date(),

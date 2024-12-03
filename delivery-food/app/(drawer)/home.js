@@ -17,7 +17,7 @@ const Home = () => {
   const [category, setCategory] = useState("tat_ca");
   const token = user ? user.accessToken : null;
 
-  const link = "http://192.168.3.8:5000/api/v1";
+  const link = process.env.REACT_APP_BACKEND_URL;
 
   const fetchMenuItems = async () => {
     
