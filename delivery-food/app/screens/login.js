@@ -104,7 +104,11 @@ const Login = () => {
           </View>
         </View>
         <View style={{ color: "#E95322", alignItems: "flex-end" }}>
-          <Text style={{ color: "#E95322" }}>Quên mật khẩu?</Text>
+          <TouchableOpacity
+            onPress={() => router.push('./forgot')}
+          >
+            <Text style={{ color: "#E95322" }}>Quên mật khẩu?</Text>
+          </TouchableOpacity>
         </View>
         <View style={{ alignItems: "center", gap: 10, }}>
           {loading ? (

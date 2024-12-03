@@ -16,13 +16,14 @@ const Home = () => {
   const { user } = useContext(UserContext);
   const token = user ? user.accessToken : null;
 
-  const link = process.env.REACT_APP_BACKEND_URL;
+  const link = "http://192.168.3.8:5000/api/v1";
 
   const fetchMenuItems = async () => {
     if (loading || !hasMore) return;
 
     setLoading(true)
     console.log(token)
+    console.log(link)
     
     try {
       const response = await axios.get(`${link}/menu_items/tat_ca`, {
