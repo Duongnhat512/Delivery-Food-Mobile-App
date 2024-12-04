@@ -19,6 +19,9 @@ const MenuItem = ({ item }) => {
                     <Text style={{ fontFamily: "LeagueSpartan-Regular", fontSize: 18 }}>
                         {item.name}
                     </Text>
+                    <Text style={{ fontFamily: "LeagueSpartan-Regular", fontSize: 18, color: "#E95322" }}>
+                        {item.price}đ
+                    </Text>
                 </View>
             </TouchableOpacity>
         </View>
