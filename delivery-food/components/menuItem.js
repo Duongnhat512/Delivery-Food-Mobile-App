@@ -20,7 +20,7 @@ const MenuItem = ({ item }) => {
                         {item.name}
                     </Text>
                     <Text style={{ fontFamily: "LeagueSpartan-Regular", fontSize: 18, color: "#E95322" }}>
-                        {item.price}đ
+                        {item.price} VND
                     </Text>
                 </View>
             </TouchableOpacity>
