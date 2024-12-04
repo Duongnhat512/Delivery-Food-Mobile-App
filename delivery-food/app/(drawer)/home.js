@@ -24,9 +24,9 @@ const Home = () => {
   setMenuItems([])
     if (loading || !hasMore) return;
 
+    console.log(link)
     setLoading(true)
     console.log(token)
-    console.log(link)
 
     try {
       const response = await axios.get(`${link}/menu_items/${category}`, {
