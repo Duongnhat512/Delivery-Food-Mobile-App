@@ -148,7 +148,6 @@ const AddPaymentScreen = () => {
               <TextInput
                 style={styles.inputSmall}
                 placeholder="MM/YY"
-                keyboardType="number-pad"
                 maxLength={5}a
                 value={expiryDate}
                 onChangeText={setExpiryDate}

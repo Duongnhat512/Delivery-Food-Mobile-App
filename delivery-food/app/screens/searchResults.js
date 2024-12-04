@@ -90,7 +90,7 @@ const SearchResults = () => {
   );
 
   useEffect(() => {
-    // fetchItems();
+    fetchItems();
   }, []);
 
   return (
