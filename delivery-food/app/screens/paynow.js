@@ -275,7 +275,7 @@ const handleConfirmOrder = async () => {
                         <View style={[styles.containerPayment, isSelectedTienMat && styles.selectedContainer]}>
                             <View style={styles.paymentItem}>
                                 <Image source={require('../../assets/tienmat.png')} style={{ width: 25, height: 25 }} />
-                                <Text> Thanh toán khi tiền khi nhận hàng</Text>
+                                <Text> Thanh toán bằng tiền mặt khi nhận hàng</Text>
                             </View>
                         </View>
                     </TouchableOpacity>
