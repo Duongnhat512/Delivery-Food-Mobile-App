@@ -136,7 +136,7 @@ const getAnChay = async (req, res) => {
     const startAfter = req.query.startAfter || '';
 
     try {
-        let query = db.collection('menu_items').where('category', '==', 'Ăn chay').orderBy('name').limit(limit);
+        let query = db.collection('menu_items').where('category', '==', 'Đồ chay').orderBy('name').limit(limit);
 
         if (startAfter) {
             const startAfterDoc = await db.collection('menu_items').doc(startAfter).get();

@@ -20,14 +20,13 @@ const Home = () => {
   const link = process.env.REACT_APP_BACKEND_URL;
 
   const fetchMenuItems = async () => {
-    
-    setMenuItems([])
+
     if (loading || !hasMore) return;
 
     setLoading(true)
     console.log(token)
     console.log(link)
-    
+
     try {
       const response = await axios.get(`${link}/menu_items/${category}`, {
         headers: {
@@ -40,18 +39,15 @@ const Home = () => {
       });
       console.log(category)
       const newMenuItems = response.data
-    
+
       setMenuItems(prevItems => [...prevItems, ...newMenuItems])
-      
+
       if (newMenuItems.length < 10) {
         setHasMore(false)
       }
-      // else {
-      //   setLastDocId(newMenuItems[newMenuItems.length - 1].id)
-      // }
-  
-
-
+      else {
+        setLastDocId(newMenuItems[newMenuItems.length - 1].id)
+      }
     } catch (error) {
       console.log(error)
     } finally {
@@ -68,7 +64,7 @@ const Home = () => {
 
   const renderFooter = () => {
     if (!loading) return null;
-    return <ActivityIndicator size="large" color="#E95322" style={{ backgroundColor: "#E2E1E1" }} />
+    return <ActivityIndicator size="large" color="#E95322" />
   }
 
   const item = [
@@ -101,14 +97,14 @@ const Home = () => {
 
 
   const changeData = async (name) => {
-    
+    setMenuItems([])
     if (name === "Đồ uống") {
       setCategory("do_uong")
-  
+
     }
     if (name === "Ăn chính") {
       setCategory("an_chinh")
-     
+
     }
     if (name === "Ăn vặt") {
       setCategory("an_vat")
@@ -117,25 +113,26 @@ const Home = () => {
     if (name === "Tráng miệng") {
       setCategory("trang_mieng")
     }
-    // if (name === "Ăn chay") {
-    //   setCategory("an_chay")
-    // }
-  
+    if (name === "Ăn chay") {
+      setCategory("an_chay")
+    }
+
   }
- 
+
 
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity onPress={() => changeData(item.name)}>
-      <View style={{ gap: 5, alignItems: "center", width: 50 }}>
-        <View style={styles.menuItem}>
-          <Image source={item.img} />
+        <View style={{ gap: 5, alignItems: "center", width: 50 }}>
+          <View style={styles.menuItem}>
+            <Image source={item.img} />
+          </View>
+          <Text style={{ fontSize: 12, fontFamily: "LeagueSpartan-Regular", width: 70, textAlign: 'center' }}
+            numberOfLines={1}
+            ellipsizeMode='tail'
+          >{item.name}</Text>
+          <Text>{item.price}</Text>
         </View>
-        <Text style={{ fontSize: 12, fontFamily: "LeagueSpartan-Regular", width: 70, textAlign: 'center' }}
-          numberOfLines={1}
-          ellipsizeMode='tail'
-        >{item.name}</Text>
-      </View>
       </TouchableOpacity>
     )
   }
@@ -190,15 +187,15 @@ const Home = () => {
         <View style={{ flex: 1 }}>
           <FlatList
             data={menuItems}
-            keyExtractor={item => item.id}
+            keyExtractor={(item, index) => item.id ? item.id.toString() : `menuItem-${index}`}
             renderItem={renderFood}
-            // onEndReached={fetchMenuItems}
+            onEndReached={fetchMenuItems}
             onEndReachedThreshold={1}
             ListFooterComponent={renderFooter}
             ListHeaderComponent={
               <>
                 {/* Hiển thị các món best seller */}
-                <View style={styles.bestSeller}>
+                {/* <View style={styles.bestSeller}>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20 }}>
                     <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold" }}>
                       Best Seller
@@ -212,7 +209,7 @@ const Home = () => {
                       />
                     </TouchableOpacity>
                   </View>
-                </View>
+                </View> */}
                 <Text style={{ fontSize: 25, fontFamily: "LeagueSpartan-SemiBold", marginTop: 20, borderBottomWidth: 1, borderBottomColor: "#FFD8C7", marginHorizontal: 20 }}>
                   Đề xuất
                 </Text>

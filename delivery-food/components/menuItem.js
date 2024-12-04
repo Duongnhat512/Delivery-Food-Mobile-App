@@ -21,17 +21,17 @@ const MenuItem = ({ item }) => {
                     </Text>
                 </View>
             </TouchableOpacity>
-            <View style={{ backgroundColor: "#E2E1E1", flex: 1, height: 10 }} />
         </View>
     );
 };
 const styles = StyleSheet.create({
     item: {
         overflow: "hidden",
-        marginVertical: 20,
-        paddingHorizontal: 20,
+        padding: 20,
         flexDirection: "row",
-        gap: 20
+        gap: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#FFD8C7",
     }
 })
 

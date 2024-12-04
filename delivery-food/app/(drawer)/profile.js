@@ -79,11 +79,11 @@ const Profile = () => {
               >{userData.phoneNumber}</Text>
             </View>
           </View>
-          <View style={{ alignItems: 'center', marginVertical: 20 }}>
+          {/* <View style={{ alignItems: 'center', marginVertical: 20 }}>
             <TouchableOpacity style={{ backgroundColor: '#E95322', padding: 10, borderRadius: 20, marginTop: 20, alignItems: 'center', width: "50%" }}>
               <Text style={{ color: '#fff', fontFamily: 'LeagueSpartan-SemiBold', fontSize: 16 }}>Cập nhật hồ sơ</Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       ) : (
         <></>
