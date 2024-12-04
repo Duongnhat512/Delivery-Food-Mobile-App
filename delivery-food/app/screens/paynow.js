@@ -18,7 +18,9 @@ const PayNow = () => {
     const { user } = useContext(UserContext);
     const { address } = useLocalSearchParams();
     const [payments, setPayments] = useState([]);
-    const [selectedPayment, setSelectedPayment] = useState(null);
+    const [selectedCredit, setSelectedCredit] = useState(null);
+    const [isSelectedTienMat, setIsSelectedTienMat] = useState(false);
+    const [isSelectedPaypal, setIsSelectedPaypal] = useState(false);
     const router = useRouter();
     const token = user ? user.accessToken : null;
     const link = process.env.REACT_APP_BACKEND_URL;
@@ -127,7 +129,7 @@ const PayNow = () => {
 
 
 const handleConfirmOrder = async () => {
-    if (!selectedPayment) {
+    if (!selectedCredit && !isSelectedTienMat && !isSelectedPaypal) {
         Alert.alert(
             'Thông báo', 
             'Vui lòng chọn phương thức thanh toán',
@@ -208,16 +210,33 @@ const handleConfirmOrder = async () => {
         );
     };
 
+    const chooseTienMat = () => {
+        setIsSelectedTienMat(true);
+        setIsSelectedPaypal(false);
+        setSelectedCredit(null);
+    };
+
+    const choosePayment = (payment) => {
+        setIsSelectedTienMat(false);
+        setIsSelectedPaypal(false);
+        setSelectedCredit(payment);
+    };
+
+    const choosePaypal = () => {
+        setIsSelectedPaypal(true);
+        setSelectedCredit(null);
+        setIsSelectedTienMat(false);
+    };
     const renderPaymentItem = ({ item }) => {
         const formattedCardNumber = `**** **** **** ${item.cardNumber.slice(-4)}`;
-        const isSelected = selectedPayment === item;
+        const isSelected = selectedCredit === item;
 
         return (
-            <TouchableOpacity onPress={() => setSelectedPayment(item)}>
+            <TouchableOpacity onPress={() => choosePayment(item)}>
                 <View style={[styles.containerPayment, isSelected && styles.selectedContainer]}>
                     <View style={styles.paymentItem}>
                         <Image source={require('../../assets/payment-method.png')} style={styles.paymentImage} />
-                        <Text>Credit Card</Text>
+                        <Text>Thanh toán bằng thẻ</Text>
                     </View>
                     <Text style={styles.paymentText}>{formattedCardNumber}</Text>
                 </View>
@@ -252,6 +271,22 @@ const handleConfirmOrder = async () => {
                             <Image source={require('../../assets/addAddress.png')} style={styles.paymentImage} />
                         </TouchableOpacity>
                     </View>
+                    <TouchableOpacity onPress={() => chooseTienMat()}>
+                        <View style={[styles.containerPayment, isSelectedTienMat && styles.selectedContainer]}>
+                            <View style={styles.paymentItem}>
+                                <Image source={require('../../assets/tienmat.png')} style={{ width: 25, height: 25 }} />
+                                <Text> Thanh toán khi tiền khi nhận hàng</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => choosePaypal()}>
+                        <View style={[styles.containerPayment, isSelectedPaypal && styles.selectedContainer]}>
+                            <View style={styles.paymentItem}>
+                                <Image source={require('../../assets/Paypal.png')} style={{ width: 25, height: 25 }} resizeMode='contain' />
+                                <Text> Thanh toán qua Paypal</Text>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
                     <FlatList
                         data={payments}
                         keyExtractor={(item) => item.cardNumber.toString()}
