@@ -19,8 +19,9 @@ const Home = () => {
 
   const link = process.env.REACT_APP_BACKEND_URL;
 
-  const fetchMenuItems = async () => {
 
+  const fetchMenuItems = async () => {
+  setMenuItems([])
     if (loading || !hasMore) return;
 
     console.log(link)
@@ -41,13 +42,15 @@ const Home = () => {
       const newMenuItems = response.data
 
       setMenuItems(prevItems => [...prevItems, ...newMenuItems])
-
+      
       if (newMenuItems.length < 10) {
         setHasMore(false)
       }
       else {
         setLastDocId(newMenuItems[newMenuItems.length - 1].id)
       }
+     
+   
     } catch (error) {
       console.log(error)
     } finally {
@@ -55,8 +58,9 @@ const Home = () => {
     }
   }
 
-
-
+  useEffect(() => {
+    console.log("menu items:", menuItems);
+  }, [menuItems]);
 
   useEffect(() => {
     fetchMenuItems();
@@ -97,7 +101,8 @@ const Home = () => {
 
 
   const changeData = async (name) => {
-    setMenuItems([])
+    
+    setLastDocId(null)
     if (name === "Đồ uống") {
       setCategory("do_uong")
 

@@ -97,7 +97,8 @@ const SearchResults = () => {
     <SafeAreaView style={styles.container}>
       <HomeHeader/>
       <View style={styles.bodyContent}>
-        <Text>Kết quả tìm kiếm cho {params.query}</Text>
+        <Text style={{textAlign: 'center', fontFamily: 'LeagueSpartan-SemiBold', fontSize: 20, marginBottom: 10}}
+        >Kết quả tìm kiếm cho {params.query}</Text>
         <FlatList
           data={items}
           renderItem={renderItem}
