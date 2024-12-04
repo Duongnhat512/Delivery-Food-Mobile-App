@@ -7,7 +7,7 @@ import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-
+import { Alert } from 'react-native';
 const ConfirmOrder = () => {
     const [footerDetails, setFooterDetails] = useState({
         subtotal: 0,
@@ -142,27 +142,44 @@ const ConfirmOrder = () => {
 
     
     const handleDeleteOrder = async (item_id) => {
-        try {
-            const response = await axios.delete(
-                `${link}/users/delete_cart_item/${item_id}`,
+        Alert.alert(
+            'Xác nhận',
+            'Bạn có chắc chắn muốn xóa sản phẩm khỏi giỏ hàng?',
+            [
                 {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
+                    text: 'Hủy',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                {
+                    text: 'Xóa',
+                    onPress: async () => {
+                        try {
+                            const response = await axios.delete(
+                                `${link}/users/delete_cart_item/${item_id}`,
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                        'Content-Type': 'application/json',
+                                    },
+                                }
+                            );
     
-            if (response.status === 200) {
-                alert('Xóa sản phẩm khỏi giỏ hàng thành công');
-                fetchUserData(); // Refresh user data to update the cart
-            } else {
-                alert('Failed to remove item from cart');
-            }
-        } catch (error) {
-            console.error('Error deleting order:', error);
-            alert('Error deleting order');
-        }
+                            if (response.status === 200) {
+                                alert('Xóa sản phẩm khỏi giỏ hàng thành công');
+                                fetchUserData(); // Refresh user data to update the cart
+                            } else {
+                                alert('Failed to remove item from cart');
+                            }
+                        } catch (error) {
+                            console.error('Error deleting order:', error);
+                            alert('Error deleting order');
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
     };
     
     const formatCurrency = (amount) => {
