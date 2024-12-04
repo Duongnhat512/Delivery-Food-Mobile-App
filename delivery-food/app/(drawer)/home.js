@@ -21,7 +21,7 @@ const Home = () => {
 
 
   const fetchMenuItems = async () => {
-  setMenuItems([])
+  // setMenuItems([])
     if (loading || !hasMore) return;
 
     console.log(link)
@@ -58,9 +58,9 @@ const Home = () => {
     }
   }
 
-  useEffect(() => {
-    console.log("menu items:", menuItems);
-  }, [menuItems]);
+  // useEffect(() => {
+  //   console.log("menu items:", menuItems);
+  // }, [menuItems]);
 
   useEffect(() => {
     fetchMenuItems();
@@ -101,7 +101,7 @@ const Home = () => {
 
 
   const changeData = async (name) => {
-    
+    setMenuItems([])
     setLastDocId(null)
     if (name === "Đồ uống") {
       setCategory("do_uong")
