@@ -45,6 +45,9 @@ const ConfirmOrder = () => {
             if (data && data.cart) {
                 setOrders(data.cart);  // Cập nhật dữ liệu giỏ hàng
             }
+            if (!data.cart || data.cart.length === 0) {
+                router.push('../screens/cart'); // Chuyển hướng nếu giỏ hàng rỗng
+            }
         } catch (error) {
             console.error('Error fetching user data:', error);
         }finally {
