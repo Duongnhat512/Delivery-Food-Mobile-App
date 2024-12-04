@@ -52,9 +52,13 @@ const AddAddress = () => {
       }
     ]
     if (addressName.trim().length === 0 || address.trim().length === 0) {
-      alert('Vui lòng nhập đầy đủ thông tin');
+      Alert.alert(
+          'Thông báo', 
+          'Vui lòng nhập đầy đủ thông tin',
+          [{ text: 'OK' }]
+      );
       return;
-    }
+  }
 
 
     const addressExists = addresses.some(existingAddress => {
@@ -63,7 +67,11 @@ const AddAddress = () => {
     });
     
     if (addressExists) {
-      alert('Địa chỉ đã tồn tại');
+      Alert.alert(
+        'Thông báo', 
+        'Địa chỉ đã tồn tại',
+        [{ text: 'OK' }]
+      );
       return;
     } 
 
@@ -78,7 +86,19 @@ const AddAddress = () => {
         data: {
           newAddress
         }
+        
       })
+
+      if (response.status === 200) {
+        Alert.alert(
+          'Thông báo', 
+          'Đã thêm địa chỉ!',
+          [{ text: 'OK' }]
+      );
+      }
+
+      
+
     } catch (error) {
       console.log(error)
     }

@@ -7,6 +7,8 @@ import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
+import { Alert } from 'react-native';
+
 const PayNow = () => {
     const [orders, setOrders] = useState([]);
     const [orderId, setOrderId] = useState(null);
@@ -100,9 +102,7 @@ const PayNow = () => {
 
     const { total } = calculateTotal();
 
-    const addOrder = async (orderData) => {
-       
-    };
+
 
  
 
@@ -110,25 +110,7 @@ const PayNow = () => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
-    const updateOrderStatus = async (item_id) => {
-        try {
-            const response = await axios.put(
-                `${link}/orders/update_status`,
-                { item_id, status: 'Confirmed' },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-            return response.status === 200;
-        } catch (error) {
-            console.error('Error updating order status:', error);
-            return false;
-        }
-    };
-
+    
     const clearCart = async () => {
         try {
             const response = await axios.delete(`${link}/users/clear_cart`, {
@@ -144,54 +126,71 @@ const PayNow = () => {
     };
 
 
-    const handleConfirmOrder = async () => {
-        if (!selectedPayment) {
-            alert('Vui lòng chọn phương thức thanh toán');
-            return;
-        }
-    
-        const newOrder = {
-            customer_id: user.uid,
-            status: "Pending",
-            total: total,
-            created_at: new Date().toISOString(),
-            updated_at: Date.now(),
-            total_delivery_fee: 10000,
-            order_details: orders.map(order => ({
-                item_id: order.item_id,
-                quantity: order.quantity,
-                delivery_fee: 10000,
-                status: "Chưa giao",
-                estimated_delivery_time: new Date(new Date().getTime() + 25 * 60 * 1000).toISOString(),
-                total: priceDetails[order.item_id] * order.quantity * 1000,
-            })),
-        };
-    
-        try {
-            const response = await axios.post(
-                `${link}/orders/add_order`,
-                newOrder,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            );
-    
-            if (response.status === 201) {
-                alert('Đơn hàng đã được thêm thành công!');
-                await clearCart();
-                fetchUserData();
-                router.push('/orders');
-            } else {
-                alert('Thêm đơn hàng thất bại');
-            }
-        } catch (error) {
-            console.error('Error adding order:', error);
-            alert('Lỗi khi thêm đơn hàng');
-        }
+const handleConfirmOrder = async () => {
+    if (!selectedPayment) {
+        Alert.alert(
+            'Thông báo', 
+            'Vui lòng chọn phương thức thanh toán',
+            [{ text: 'OK' }]  
+        );
+        return;
+    }
+
+    const newOrder = {
+        customer_id: user.uid,
+        status: "Pending",
+        total: total,
+        created_at: new Date().toISOString(),
+        updated_at: Date.now(),
+        total_delivery_fee: 10000,
+        order_details: orders.map(order => ({
+            item_id: order.item_id,
+            quantity: order.quantity,
+            delivery_fee: 10000,
+            status: "Chưa giao",
+            estimated_delivery_time: new Date(new Date().getTime() + 25 * 60 * 1000).toISOString(),
+            total: priceDetails[order.item_id] * order.quantity * 1000,
+        })),
     };
+
+    try {
+        const response = await axios.post(
+            `${link}/orders/add_order`,
+            newOrder,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+
+        if (response.status === 201) {
+            Alert.alert(
+                'Thông báo',
+                'Đơn hàng đã được thêm thành công!',
+                [{ text: 'OK' }]
+            );
+            await clearCart();
+            fetchUserData();
+            router.push('/orders');
+        } else {
+            Alert.alert(
+                'Thông báo',
+                'Thêm đơn hàng thất bại',
+                [{ text: 'OK' }]
+            );
+        }
+    } catch (error) {
+        console.error('Error adding order:', error);
+        Alert.alert(
+            'Thông báo',
+            'Lỗi khi thêm đơn hàng',
+            [{ text: 'OK' }]
+        );
+    }
+};
+
 
     const renderOrderItem = ({ item }) => {
         return (

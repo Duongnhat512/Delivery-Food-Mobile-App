@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image,Text, View, StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { Image,Text, View, StyleSheet, TextInput, Alert,TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import { useRouter } from 'expo-router';
@@ -59,28 +59,45 @@ const AddPaymentScreen = () => {
     
     // Kiểm tra các trường không được rỗng và không chỉ chứa khoảng trắng
     if (!cardNumber.trim() || !cardHolder.trim() || !expiryDate.trim() || !cvv.trim()) {
-      alert('Vui lòng nhập đầy đủ thông tin thẻ!');
+      Alert.alert(
+        'Thông báo', 
+        'Vui lòng nhập đầy đủ thông tin',
+        [{ text: 'OK' }]
+      );
       return;
     }
   
     // Regex kiểm tra định dạng số thẻ (16 chữ số)
     const cardNumberRegex = /^\d{16}$/;
     if (!cardNumberRegex.test(cardNumber.trim())) {
-      alert('Số thẻ không hợp lệ!');
+      Alert.alert(
+        'Thông báo', 
+        'Số thẻ không hợp lệ!',
+        [{ text: 'OK' }]
+      );
       return;
     }
   
     // Regex kiểm tra định dạng ngày hết hạn (MM/YY)
     const expiryDateRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
     if (!expiryDateRegex.test(expiryDate.trim())) {
-      alert('Ngày hết hạn không hợp lệ!');
+      
+      Alert.alert(
+        'Thông báo', 
+        'Ngày hết hạn không hợp lệ!',
+        [{ text: 'OK' }]
+      );
       return;
     }
   
     // Regex kiểm tra định dạng CVV 3 chữ số
     const cvvRegex = /^\d{3}$/;
     if (!cvvRegex.test(cvv.trim())) {
-      alert('CVV không hợp lệ!');
+      Alert.alert(
+        'Thông báo', 
+        'CVV không hợp lệ!',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
@@ -89,7 +106,11 @@ const AddPaymentScreen = () => {
       return existingPayment.cardNumber === cardNumber;
     });
     if (cardExists) {
-      alert('Thẻ đã tồn tại!');
+      Alert.alert(
+        'Thông báo', 
+        'Thẻ đã tồn tại',
+        [{ text: 'OK' }]
+      );
       return;
     }
     

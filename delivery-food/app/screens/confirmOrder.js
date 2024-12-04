@@ -166,14 +166,28 @@ const ConfirmOrder = () => {
                             );
     
                             if (response.status === 200) {
-                                alert('Xóa sản phẩm khỏi giỏ hàng thành công');
+                                Alert.alert(
+                                    'Thông báo',
+                                    'Đã xóa sản phẩm khỏi giỏ hàng!',
+                                    [{ text: 'OK' }]
+                                );
                                 fetchUserData(); // Refresh user data to update the cart
                             } else {
-                                alert('Failed to remove item from cart');
+                                
+                                console.error('Unexpected response:', response);
+                                Alert.alert(
+                                    'Thông báo',
+                                    'Có lỗi xảy ra khi xóa sản phẩm khỏi giỏ hàng.',
+                                    [{ text: 'OK' }]
+                                );
                             }
                         } catch (error) {
                             console.error('Error deleting order:', error);
-                            alert('Error deleting order');
+                            Alert.alert(
+                                'Thông báo',
+                                'Không thể xóa sản phẩm khỏi giỏ hàng.',
+                                [{ text: 'OK' }]
+                            );
                         }
                     },
                 },
@@ -228,11 +242,20 @@ const ConfirmOrder = () => {
                 console.log('Decrease quantity:', response.data);
             } else {
                 console.error('Unexpected response:', response);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                Alert.alert(
+                    'Thông báo',
+                    'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
+                    [{ text: 'OK' }]
+                );
+
             }
         } catch (error) {
             console.error('Error adding to cart:', error.response || error.message);
-            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+            Alert.alert(
+                'Thông báo',
+                'Không thể thêm sản phẩm vào giỏ hàng.',
+                [{ text: 'OK' }]
+            );
         }
     };
     const handleIncreaseQuantity = async (item_id) => {
@@ -256,19 +279,31 @@ const ConfirmOrder = () => {
                 console.log('Increase quantity:', response.data);
             } else {
                 console.error('Unexpected response:', response);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                Alert.alert(
+                    'Thông báo',
+                    'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
+                    [{ text: 'OK' }]
+                );
             }
         } catch (error) {
             console.error('Error adding to cart:', error.response || error.message);
-            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+            Alert.alert(
+                'Thông báo',
+                'Không thể thêm sản phẩm vào giỏ hàng.',
+                [{ text: 'OK' }]
+            );
         }
     };
-    const handleConfirmOrder =  () => {
+    const handleConfirmOrder = () => {
         if (!selectedAddress) {
-            alert('Vui lòng chọn địa chỉ giao hàng');
+            Alert.alert(
+                'Thông báo', 
+                'Vui lòng chọn địa chỉ giao hàng',
+                [{ text: 'OK' }]  // Nút "OK" để đóng thông báo
+            );
             return;
         }
-        
+    
         router.push(`./paynow?address=${selectedAddress}`);
     };
     const renderOrderItem = ({ item }) => {

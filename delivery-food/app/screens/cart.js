@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 
-import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList, Alert } from 'react-native';
 import axios from 'axios';
 import { UserContext } from '../contexts/userContext';
 import { useRouter } from 'expo-router';
@@ -114,11 +114,19 @@ const CartScreen = () => {
                 console.log('Increase quantity:', response.data);
             } else {
                 console.error('Unexpected response:', response);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                Alert.alert(
+                    'Thông báo',
+                    'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
+                    [{ text: 'OK' }]
+                );
             }
         } catch (error) {
             console.error('Error adding to cart:', error.response || error.message);
-            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+            Alert.alert(
+                'Thông báo',
+                'Không thể thêm sản phẩm vào giỏ hàng.',
+                [{ text: 'OK' }]
+            );
         }
     };
     const handleDecreaseQuantity = async (item) => {
@@ -149,11 +157,21 @@ const CartScreen = () => {
                 console.log('Decrease quantity:', response.data);
             } else {
                 console.error('Unexpected response:', response);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                Alert.alert(
+                    'Thông báo',
+                    'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
+                    [{ text: 'OK' }]
+                );
+
             }
         } catch (error) {
             console.error('Error adding to cart:', error.response || error.message);
-            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+           
+            Alert.alert(
+                'Thông báo',
+                'Không thể thêm sản phẩm vào giỏ hàng.',
+                [{ text: 'OK' }]
+            );
         }
     };
 
@@ -162,7 +180,11 @@ const CartScreen = () => {
     };
     const handleCheckout = () => {
         if(orders.length === 0) {
-            alert('Giỏ hàng của bạn đang trống');
+            Alert.alert(
+                'Thông báo',
+                'Giỏ hàng của bạn đang trống!',
+                [{ text: 'OK' }]
+            );
             return;
         }
         router.push('./confirmOrder');

@@ -1,7 +1,7 @@
 import { useLocalSearchParams ,router } from 'expo-router';
 
 import React, { useState,useContext,useEffect } from 'react'
-import { Text, View, StyleSheet, TouchableOpacity, Button, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Image, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomHeader from '../../components/customheader';
 import { UserContext } from '../contexts/userContext';
@@ -26,7 +26,11 @@ const OrderCancel = () => {
 
   const handleConfirm = async () => {
     if (selectedReasons.length === 0 && otherReason.trim().length === 0) {
-      alert('Vui lòng chọn hoặc nhập lý do hủy đơn');
+      Alert.alert(
+        'Thông báo',
+        'Vui lòng chọn hoặc nhập lý do hủy đơn',
+        [{ text: 'OK' }]
+      );
       return;
     }
 
@@ -43,7 +47,12 @@ const OrderCancel = () => {
       if (response.status === 200) {
         router.push('/orderCancelConfirm');
       } else {
-        alert('Hủy đơn thất bại');
+        Alert.alert(
+          'Thông báo',
+          'Có lỗi xảy ra khi hủy đơn',
+          [{ text: 'OK' }]
+        );
+
       }
     }
     catch (error) {

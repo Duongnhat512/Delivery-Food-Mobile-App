@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useContext } from 'react';
 import { UserContext } from '../contexts/userContext';
 import axios from 'axios';
-
+import { Alert } from 'react-native';
 const FoodDetails = () => {
     const {user} = useContext(UserContext);
     const link = process.env.REACT_APP_BACKEND_URL;
@@ -21,39 +21,49 @@ const FoodDetails = () => {
     const [totalPrice, setTotalPrice] = useState(parsedItem.price);
 
   
-    const handleAddToCart = async () => {
-        const cartItem = {
-            item_id: parsedItem.id,
-            quantity: quantity,
-        };
-        try {
-            const response = await axios.post(
-                `${process.env.REACT_APP_BACKEND_URL}/users/add_Cart`, // API endpoint thêm vào giỏ hàng
-                cartItem,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`, // Token xác thực
-                    },
-                }
-            );
-    
-            if (response.status === 200) {
-                alert('Đã thêm sản phẩm vào giỏ hàng!');
-            } else {
-                console.error('Unexpected response:', response);
-                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+ 
+
+const handleAddToCart = async () => {
+    const cartItem = {
+        item_id: parsedItem.id,
+        quantity: quantity,
+    };
+
+    try {
+        const response = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/users/add_Cart`, // API endpoint thêm vào giỏ hàng
+            cartItem,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Token xác thực
+                },
             }
-        } catch (error) {
-            console.error('Error adding to cart:', error.response || error.message);
-            alert('Không thể thêm sản phẩm vào giỏ hàng.');
+        );
+
+        if (response.status === 200) {
+            Alert.alert(
+                'Thông báo', 
+                'Đã thêm sản phẩm vào giỏ hàng!',
+                [{ text: 'OK' }]  // Nút "OK" để đóng thông báo
+            );
+        } else {
+            console.error('Unexpected response:', response);
+            Alert.alert(
+                'Thông báo',
+                'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.',
+                [{ text: 'OK' }]
+            );
         }
-       
-
-
-        
-
-
+    } catch (error) {
+        console.error('Error adding to cart:', error.response || error.message);
+        Alert.alert(
+            'Thông báo',
+            'Không thể thêm sản phẩm vào giỏ hàng.',
+            [{ text: 'OK' }]
+        );
+    }
 };
+
     const formatPrice = (price) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     };
